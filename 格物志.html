@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>四库·格物志 — 古人早就知道了</title>
+<style>
+  /* ===== 四库视觉体系 ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --zhu-hong: #8B2500;
+    --zhu-hong-light: #B8431A;
+    --xuan-zhi: #F5F0E8;
+    --mo-hei: #2C1810;
+    --qing-lv: #4A7C59;
+    --chi-hong: #C23B22;
+    --qian-lan: #5B7E9E;
+    --shen-he: #5C4033;
+    --jin-xiang: #C9A96E;
+    --zhu-sha: #CC3333;
+    --hui: #999;
+    --hui-light: #E8E0D8;
+    --shadow: rgba(44,24,16,0.15);
+    --radius: 12px;
+    --font-title: 'Georgia', 'Noto Serif SC', 'KaiTi', serif;
+    --font-body: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  }
+  html, body {
+    height: 100%;
+    background: var(--xuan-zhi);
+    font-family: var(--font-body);
+    color: var(--mo-hei);
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+  }
+  
+  /* ===== 朱丝栏背景 ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      repeating-linear-gradient(90deg, 
+        transparent, transparent 28px, 
+        rgba(139,37,0,0.04) 28px, rgba(139,37,0,0.04) 29px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== App Shell ===== */
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    overflow: hidden;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    padding: 12px 0 6px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .header h1 {
+    font-family: var(--font-title);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--zhu-hong);
+    letter-spacing: 4px;
+  }
+  .header .subtitle {
+    font-size: 12px;
+    color: var(--shen-he);
+    letter-spacing: 2px;
+    margin-top: -2px;
+    opacity: 0.5;
+  }
+  .header .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding: 0 4px;
+  }
+  .progress-row .stat {
+    font-size: 12px;
+    color: var(--shen-he);
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(139,37,0,0.12);
+    border-radius: 20px;
+    padding: 3px 12px;
+  }
+  .progress-row .stat strong { color: var(--zhu-hong); }
+
+  /* ===== Tab Bar ===== */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    margin: 8px 0 10px;
+    background: var(--hui-light);
+    border-radius: var(--radius);
+    padding: 3px;
+    flex-shrink: 0;
+  }
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    color: var(--shen-he);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--zhu-hong);
+    color: white;
+    box-shadow: 0 2px 8px rgba(139,37,0,0.3);
+  }
+  .tab-btn .badge {
+    display: inline-block;
+    background: var(--chi-hong);
+    color: white;
+    font-size: 10px;
+    border-radius: 10px;
+    padding: 1px 6px;
+    margin-left: 3px;
+    vertical-align: top;
+  }
+
+  /* ===== Content Area ===== */
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 0 12px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  .content-area::-webkit-scrollbar { width: 3px; }
+  .content-area::-webkit-scrollbar-thumb { background: var(--hui); border-radius: 3px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== Question Card ===== */
+  .question-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px var(--shadow);
+    padding: 24px 20px 20px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(139,37,0,0.08);
+    position: relative;
+  }
+  .question-card .category-tag {
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 11px;
+    color: var(--zhu-hong);
+    background: rgba(139,37,0,0.06);
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(139,37,0,0.12);
+  }
+  .question-card .q-number {
+    font-size: 12px;
+    color: var(--hui);
+    margin-bottom: 4px;
+  }
+  .question-card .q-source {
+    font-size: 13px;
+    color: var(--qing-lv);
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+  .question-card .q-text {
+    font-family: var(--font-title);
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--mo-hei);
+    text-align: center;
+    padding: 16px 0;
+    border-top: 1px dashed rgba(139,37,0,0.15);
+    border-bottom: 1px dashed rgba(139,37,0,0.15);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .question-card .q-prompt {
+    font-size: 14px;
+    color: var(--shen-he);
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  /* ===== Options ===== */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .option-btn {
+    padding: 14px 8px;
+    font-size: 15px;
+    font-weight: 500;
+    border: 2px solid var(--hui-light);
+    border-radius: 10px;
+    background: white;
+    color: var(--mo-hei);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .option-btn:active { transform: scale(0.97); }
+  .option-btn:hover:not(.disabled) {
+    border-color: var(--jin-xiang);
+    background: rgba(201,169,110,0.06);
+  }
+  .option-btn.correct {
+    border-color: var(--qing-lv);
+    background: rgba(74,124,89,0.1);
+    color: var(--qing-lv);
+  }
+  .option-btn.wrong {
+    border-color: var(--chi-hong);
+    background: rgba(194,59,34,0.08);
+    color: var(--chi-hong);
+  }
+  .option-btn.disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+  .option-btn.reveal-correct {
+    border-color: var(--qing-lv);
+    background: rgba(74,124,89,0.06);
+  }
+
+  /* ===== Result Card ===== */
+  .result-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    text-align: center;
+    box-shadow: 0 2px 12px var(--shadow);
+    border-left: 4px solid var(--jin-xiang);
+  }
+  .result-card.correct { border-left-color: var(--qing-lv); }
+  .result-card.wrong { border-left-color: var(--chi-hong); }
+  .result-card .result-icon { font-size: 32px; }
+  .result-card .result-title { font-size: 18px; font-weight: 700; margin: 4px 0 2px; }
+  .result-card .result-explain { font-size: 13px; color: var(--shen-he); line-height: 1.5; margin-top: 6px; }
+  .result-card .result-source { font-size: 12px; color: var(--hui); margin-top: 4px; }
+  .result-card .result-extra { font-size: 12px; color: var(--zhu-hong); margin-top: 8px; font-style: italic; }
+
+  /* ===== Action Buttons ===== */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .action-row .btn {
+    flex: 1;
+    padding: 13px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .action-row .btn:active { transform: scale(0.97); }
+  .btn.primary {
+    background: var(--zhu-hong);
+    color: white;
+    box-shadow: 0 2px 10px rgba(139,37,0,0.25);
+  }
+  .btn.primary:hover { background: var(--zhu-hong-light); }
+  .btn.secondary {
+    background: white;
+    color: var(--zhu-hong);
+    border: 2px solid var(--zhu-hong);
+  }
+  .btn.restart {
+    background: var(--shen-he);
+    color: white;
+  }
+
+  /* ===== Collection Wall ===== */
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .collect-slot {
+    aspect-ratio: 3/4;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .collect-slot.locked {
+    background: rgba(139,37,0,0.04);
+    border: 1px dashed rgba(139,37,0,0.15);
+    color: var(--hui);
+  }
+  .collect-slot.locked::after {
+    content: '🔒';
+    font-size: 16px;
+  }
+  .collect-slot.owned {
+    background: white;
+    border: 1px solid rgba(74,124,89,0.25);
+    box-shadow: 0 1px 6px rgba(74,124,89,0.1);
+    cursor: default;
+  }
+  .collect-slot.owned .slot-char {
+    font-family: var(--font-title);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--zhu-hong);
+  }
+  .collect-slot.owned .slot-title {
+    font-size: 9px;
+    color: var(--shen-he);
+    margin-top: 2px;
+    text-align: center;
+    line-height: 1.2;
+    padding: 0 2px;
+  }
+  .collect-slot.owned .slot-category {
+    position: absolute;
+    top: 3px; right: 4px;
+    font-size: 8px;
+    color: var(--qing-lv);
+    opacity: 0.6;
+  }
+  .collect-slot.owned.new-card {
+    animation: cardPopIn 0.5s ease;
+  }
+  @keyframes cardPopIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .collect-slot.owned .slot-index {
+    position: absolute;
+    bottom: 3px; left: 5px;
+    font-size: 8px;
+    color: var(--hui);
+  }
+
+  /* ===== Exile Pool ===== */
+  .exile-pool-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--hui);
+  }
+  .exile-pool-empty .icon { font-size: 48px; }
+  .exile-pool-empty p { font-size: 14px; margin-top: 8px; }
+  .exile-card {
+    background: white;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--chi-hong);
+    box-shadow: 0 2px 8px var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .exile-card .exile-text {
+    font-family: var(--font-title);
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .exile-card .exile-source {
+    font-size: 12px;
+    color: var(--hui);
+    margin-top: 4px;
+  }
+  .exile-card .exile-answer {
+    flex-shrink: 0;
+    background: rgba(74,124,89,0.08);
+    color: var(--qing-lv);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ===== Category Filter ===== */
+  .category-filter {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .category-filter::-webkit-scrollbar { height: 2px; }
+  .category-filter::-webkit-scrollbar-thumb { background: var(--hui); border-radius: 2px; }
+  .cat-btn {
+    flex-shrink: 0;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(139,37,0,0.12);
+    background: white;
+    color: var(--shen-he);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cat-btn.active {
+    background: var(--zhu-hong);
+    color: white;
+    border-color: var(--zhu-hong);
+  }
+  .cat-btn .cat-count {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-left: 2px;
+  }
+
+  /* ===== Stats Summary ===== */
+  .stats-summary {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .stats-item .s-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--zhu-hong);
+  }
+  .stats-item .s-label {
+    font-size: 12px;
+    color: var(--hui);
+    margin-top: 2px;
+  }
+
+  /* ===== Streak ===== */
+  .streak-bar {
+    background: white;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .streak-bar .fire { font-size: 28px; }
+  .streak-bar .streak-info { flex: 1; }
+  .streak-bar .streak-info .s-text {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .streak-bar .streak-info .s-progress {
+    font-size: 12px;
+    color: var(--hui);
+    margin-top: 2px;
+  }
+  .streak-bar .streak-days {
+    display: flex;
+    gap: 4px;
+  }
+  .streak-bar .streak-days .day-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    border: 1px solid var(--hui-light);
+    color: var(--hui);
+    background: var(--xuan-zhi);
+  }
+  .streak-bar .streak-days .day-dot.done {
+    background: var(--qing-lv);
+    color: white;
+    border-color: var(--qing-lv);
+  }
+  .streak-bar .streak-days .day-dot.today {
+    border-color: var(--zhu-hong);
+    background: rgba(139,37,0,0.06);
+    color: var(--zhu-hong);
+    font-weight: 700;
+  }
+
+  /* ===== Modals ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(44,24,16,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: white;
+    border-radius: 16px;
+    max-width: 360px;
+    width: 100%;
+    padding: 28px 24px 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  }
+  .modal-box .modal-icon { font-size: 56px; }
+  .modal-box h2 { font-size: 22px; margin: 8px 0 4px; color: var(--mo-hei); }
+  .modal-box p { font-size: 14px; color: var(--shen-he); line-height: 1.5; margin-bottom: 16px; }
+  .modal-box .btn { width: 100%; padding: 13px 0; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+
+  /* ===== Empty State ===== */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--hui);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; margin-bottom: 4px; }
+  .empty-state .hint { font-size: 12px; opacity: 0.6; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 380px) {
+    .collection-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .question-card .q-text { font-size: 18px; }
+    .options { gap: 8px; }
+    .option-btn { padding: 11px 6px; font-size: 14px; }
+  }
+  @media (min-height: 800px) {
+    .content-area { padding: 8px 0 20px; }
+  }
+
+  /* ===== Transitions ===== */
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== Progress Bar ===== */
+  .progress-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: var(--hui-light);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--zhu-hong), var(--jin-xiang));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== Header ===== -->
+  <div class="header">
+    <h1>📖 四库·格物志</h1>
+    <div class="subtitle">古人早就知道了</div>
+    <div class="progress-row">
+      <span class="stat">🏺 已收 <strong id="collected-count">0</strong>/36</span>
+      <span class="stat">🔥 连对 <strong id="streak-count">0</strong> 题</span>
+      <span class="stat">✅ 正确率 <strong id="acc-rate">0%</strong></span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- ===== Tab Bar ===== -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">🎯 答题</button>
+    <button class="tab-btn" data-tab="collection" onclick="switchTab('collection')">🏺 格物集</button>
+    <button class="tab-btn" data-tab="exile" onclick="switchTab('exile')">🌊 流放池 <span class="badge" id="exile-badge">0</span></button>
+  </div>
+
+  <!-- ===== Content Area ===== -->
+  <div class="content-area" id="content-area">
+
+    <!-- ===== Play Tab ===== -->
+    <div class="page active" id="page-play">
+      <div id="game-content"></div>
+    </div>
+
+    <!-- ===== Collection Tab ===== -->
+    <div class="page" id="page-collection"></div>
+
+    <!-- ===== Exile Tab ===== -->
+    <div class="page" id="page-exile"></div>
+
+  </div>
+</div>
+
+<!-- ===== Modal ===== -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">🎉</div>
+    <h2 id="modal-title">恭喜！</h2>
+    <p id="modal-text">你已经收集齐了36条格物志知识！</p>
+    <button class="btn primary" onclick="closeModal()" id="modal-btn">继续</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA — 36条格物志知识（来源：四库全书·子部·谱录类为主）
+// ============================================================
+const CATEGORIES = {
+  '造物门': { icon: '🔧', desc: '古人怎么造东西' },
+  '自然门': { icon: '🌿', desc: '古人怎么看万物' },
+  '风雅门': { icon: '🎋', desc: '古人的生活方式' },
+  '博物门': { icon: '🏺', desc: '古籍里的冷知识' },
+  '方物门': { icon: '🗺️', desc: '各地的特产记录' },
+  '秘藏门': { icon: '🔐', desc: '文溯阁独有内容' }
+};
+
+const CARDS = [
+  // === 造物门（10张）===
+  { id: 1,  category: '造物门', title: '制墨配方', text: '每料真桐油三斤，入香油一斤', source: '《墨法集要》',
+    options: ['造纸配方', '酿酒配方', '制墨配方', '煮盐配方'], answer: 2,
+    extra: '800年前的化学配方——古人制墨有精确的油料配比', char: '墨', tag: '化学' },
+  { id: 2,  category: '造物门', title: '宣纸年产量', text: '宣纸，岁贡十一万张', source: '《文房四谱》',
+    options: ['一万张', '五万张', '十一万张', '二十万张'], answer: 2,
+    extra: '唐代宣纸年产量≈11万张——造纸业的规模化生产', char: '纸', tag: '产量' },
+  { id: 3,  category: '造物门', title: '洮河绿石', text: '洮河绿石，性软而润', source: '《砚谱》',
+    options: ['端砚', '歙砚', '洮河砚', '澄泥砚'], answer: 2,
+    extra: '甘肃洮砚名列四大名砚之一——跟甘肃直接相关！', char: '砚', tag: '甘肃' },
+  { id: 4,  category: '造物门', title: '蜀王熏衣法', text: '蜀王熏御衣法：沉香半两、檀香半两', source: '《香谱》',
+    options: ['制酒法', '熏衣法', '煮茶法', '制药法'], answer: 1,
+    extra: '宋朝国王用沉香檀香熏衣服——极致的精致生活', char: '香', tag: '生活' },
+  { id: 5,  category: '造物门', title: '冰糖制法', text: '糖霜，古无有之', source: '《糖霜谱》',
+    options: ['唐代已有', '古来有之', '宋代才发明', '元代传入'], answer: 2,
+    extra: '宋代才发明冰糖——古人吃糖的历史比我们想的晚', char: '糖', tag: '发明' },
+  { id: 6,  category: '造物门', title: '酿酒时节', text: '酒以九月为良，此时黍熟', source: '《酒谱》',
+    options: ['三月', '六月', '九月', '腊月'], answer: 2,
+    extra: '九月是新黍成熟时——节气与酿造的精准对应', char: '酒', tag: '节气' },
+  { id: 7,  category: '造物门', title: '桐木辨音', text: '桐木，叩之清越者良', source: '《桐谱》',
+    options: ['敲了听音', '看纹理', '闻气味', '称重量'], answer: 0,
+    extra: '做古琴的桐木要敲了听音——木头会唱歌', char: '桐', tag: '工艺' },
+  { id: 8,  category: '造物门', title: '竹品六十一', text: '竹之品类六十有一', source: '《竹谱》',
+    options: ['三十一种', '四十一种', '五十一种', '六十一种'], answer: 3,
+    extra: '宋人已经给竹子分了61个品种——早期的植物分类学', char: '竹', tag: '分类' },
+  { id: 9,  category: '造物门', title: '松蕈', text: '松蕈，生松阴中，采之无时', source: '《菌谱》',
+    options: ['灵芝', '松茸', '香菇', '木耳'], answer: 1,
+    extra: '宋代人已经开始吃松茸了——千年美食传承', char: '蕈', tag: '美食' },
+  { id: 10, category: '造物门', title: '荔枝品种', text: '荔枝，闽中唯四郡有之', source: '《荔枝谱》',
+    options: ['只有福建产', '四郡都有', '四海之内', '四季皆产'], answer: 1,
+    extra: '宋代荔枝只在福建四个郡有——最早的水果地理志', char: '荔', tag: '地理' },
+
+  // === 自然门（8张）===
+  { id: 11, category: '自然门', title: '鹤鸣', text: '鹤，阳鸟也，因金气而鸣', source: '《禽经》',
+    options: ['春天鸣叫', '秋天鸣叫', '下雨前鸣叫', '求偶时鸣叫'], answer: 1,
+    extra: '古人观察到鹤在秋天鸣叫——物候学的早期记录', char: '鹤', tag: '物候' },
+  { id: 12, category: '自然门', title: '蟹芒', text: '蟹，八月腹内有芒', source: '《蟹谱》',
+    options: ['秋天的蟹最肥', '八月蟹有寄生虫', '蟹腹有芒状物', '八月蟹产卵'], answer: 2,
+    extra: '宋代人已经研究螃蟹的生理结构——千年的自然观察', char: '蟹', tag: '观察' },
+  { id: 13, category: '自然门', title: '鱼跃', text: '鱼跃，非时则有灾', source: '《鱼经》',
+    options: ['鱼跃龙门', '鱼反常跳跃是灾兆', '鱼跳出水面', '鱼儿有灾'], answer: 1,
+    extra: '鱼反常跳跃是气象预兆——古人的天气预报', char: '鱼', tag: '气象' },
+  { id: 14, category: '自然门', title: '蚕眠', text: '蚕眠，不食不动，蜕皮也', source: '《蚕书》',
+    options: ['睡觉', '生病了', '蜕皮', '冬眠'], answer: 2,
+    extra: '宋人知道蚕休眠是在蜕皮——了解蚕的生理周期', char: '蚕', tag: '生理' },
+  { id: 15, category: '自然门', title: '稻熟', text: '稻，自种至熟，百二十日', source: '《禾谱》',
+    options: ['六十天', '九十天', '一百二十天', '一百八十天'], answer: 2,
+    extra: '水稻从种植到成熟正好120天——精确的农业记录', char: '稻', tag: '农时' },
+  { id: 16, category: '自然门', title: '牡丹古称', text: '牡丹，唐人谓之木芍药', source: '《牡丹谱》',
+    options: ['木芙蓉', '木芍药', '木槿', '木棉'], answer: 1,
+    extra: '唐代人把牡丹叫"木芍药"——花名的演变史', char: '牡', tag: '名物' },
+  { id: 17, category: '自然门', title: '菊名', text: '菊，一名节花，一名延年', source: '《菊谱》',
+    options: ['花中君子', '节花/延年', '秋花/霜菊', '隐逸花'], answer: 1,
+    extra: '菊花在古代叫"节花""延年"——菊花的文化寓意', char: '菊', tag: '文化' },
+  { id: 18, category: '自然门', title: '梅品', text: '梅以韵胜，以格高', source: '《梅谱》',
+    options: ['以形胜', '以韵胜', '以香胜', '以色胜'], answer: 1,
+    extra: '梅花以韵味和格调取胜——宋人审美标准的精髓', char: '梅', tag: '审美' },
+
+  // === 风雅门（10张）===
+  { id: 19, category: '风雅门', title: '煮水', text: '其沸如鱼目，微有声为一沸', source: '《茶经》',
+    options: ['鱼游水中', '煮水的火候', '鱼目混珠', '水中有鱼'], answer: 1,
+    extra: '陆羽把水烧开分成三个阶段——茶人的极致讲究', char: '茶', tag: '品鉴' },
+  { id: 20, category: '风雅门', title: '先手', text: '宁失数子，勿失一先', source: '《棋经》',
+    options: ['宁可输棋', '宁可丢子不可丢先手', '先手必胜', '先下手为强'], answer: 1,
+    extra: '围棋第一原理——先手比子力更重要', char: '棋', tag: '棋理' },
+  { id: 21, category: '风雅门', title: '琴心', text: '琴者，心也', source: '《琴史》',
+    options: ['琴是乐器', '琴是心的表达', '琴是心声', '琴是心情'], answer: 1,
+    extra: '古琴不是炫技，是心的表达——古琴的哲学', char: '琴', tag: '哲学' },
+  { id: 22, category: '风雅门', title: '书意', text: '书者，散也，欲书先散怀抱', source: '《书谱》',
+    options: ['写字要散心', '先放松心情再写字', '写散字', '书法的散漫'], answer: 1,
+    extra: '孙过庭说写字前要先放松——唐代的创作方法论', char: '书', tag: '创作' },
+  { id: 23, category: '风雅门', title: '画竹', text: '画竹必先得成竹于胸中', source: '《画谱》',
+    options: ['画竹子要有气势', '心中先有完整竹子', '画竹子要画完', '成语胸有成竹'], answer: 1,
+    extra: '胸有成竹——这句成语就出自这里！', char: '竹', tag: '成语' },
+  { id: 24, category: '风雅门', title: '素食', text: '菜根香，滋味长', source: '《蔬食谱》',
+    options: ['菜根很香', '最朴素的菜最有滋味', '菜根长得好', '蔬菜的根是香的'], answer: 1,
+    extra: '嚼得菜根，百事可做——古人的饮食哲学', char: '蔬', tag: '饮食' },
+  { id: 25, category: '风雅门', title: '药名', text: '当归，调血，为女人要药', source: '《药谱》',
+    options: ['补气药', '调血药', '解毒药', '安神药'], answer: 1,
+    extra: '当归是妇科第一要药——中药智慧的精准', char: '药', tag: '医理' },
+  { id: 26, category: '风雅门', title: '五味', text: '酸入肝，辛入肺，苦入心', source: '《食经》',
+    options: ['五味对应五脏', '五味调和', '五味入菜', '五味的味道'], answer: 0,
+    extra: '中医食疗的基础——吃什么补什么是有根据的', char: '味', tag: '中医' },
+  { id: 27, category: '风雅门', title: '焚香', text: '焚香，以静心，以养神', source: '《香谱》',
+    options: ['驱蚊', '净化空气', '静心养神', '祭祀神明'], answer: 2,
+    extra: '焚香不是为了好闻，是为了静心养神——香道的精神价值', char: '香', tag: '精神' },
+  { id: 28, category: '风雅门', title: '点茶', text: '茶色贵白，以青白胜黄白', source: '《茶录》',
+    options: ['白茶最贵', '茶色以白色为贵', '绿茶最好', '黄茶最差'], answer: 1,
+    extra: '宋代喝茶以泡沫白为美——宋代的饮茶美学', char: '点', tag: '美学' },
+
+  // === 博物门（8张）===
+  { id: 29, category: '博物门', title: '鲲鹏', text: '北冥有鱼，其名为鲲', source: '《山海经》（四库收录）',
+    options: ['庄子寓言', '真实生物', '太平洋的鱼', '北极的鲸'], answer: 0,
+    extra: '庄子的大鱼大鸟——两千年前的想象力', char: '鲲', tag: '想象' },
+  { id: 30, category: '博物门', title: '冰蚕', text: '冰蚕，长七寸，黑色', source: '《博物志》（四库收录）',
+    options: ['真蚕的品种', '传说中的蚕', '冰块里的蚕', '黑色的蚕'], answer: 1,
+    extra: '冰蚕是传说中的生物——古人的奇思妙想', char: '冰', tag: '传说' },
+  { id: 31, category: '博物门', title: '八骏', text: '王驭八龙之骏', source: '《拾遗记》（四库·文溯特藏）',
+    options: ['八匹神马', '八条龙', '八位将军', '八种宝贝'], answer: 0,
+    extra: '穆王八骏——学生已经做了这个IP！', char: '骏', tag: 'IP' },
+  { id: 32, category: '博物门', title: '七夕穿针', text: '汉彩女以七月七日穿七孔针', source: '《西京杂记》',
+    options: ['做针线活', '穿七孔针乞巧', '比赛刺绣', '缝衣服'], answer: 1,
+    extra: '汉代人过七夕是穿七孔针乞巧——最早的乞巧节', char: '巧', tag: '节日' },
+  { id: 33, category: '博物门', title: '端午', text: '五月五日，竞采杂药', source: '《荆楚岁时记》',
+    options: ['赛龙舟', '采百药', '吃粽子', '挂艾草'], answer: 1,
+    extra: '端午采百药是为了祛病——节日起源是防疫', char: '端', tag: '起源' },
+  { id: 34, category: '博物门', title: '茶市', text: '巴陵，茶商所聚', source: '《岳阳风土记》',
+    options: ['种茶的地方', '茶商聚集的市场', '喝茶的地方', '茶叶产地'], answer: 1,
+    extra: '宋代的湖南岳阳已是茶商云集——古代商业的繁荣', char: '市', tag: '商业' },
+  { id: 35, category: '博物门', title: '蜀中特产', text: '蜀中产嘉鱼，似鳟而肥', source: '《益部方物略记》',
+    options: ['嘉定的鱼', '一种名叫嘉鱼的鱼', '四川的鲤鱼', '肥美的鱼'], answer: 1,
+    extra: '四川的特产"嘉鱼"——古代的地方物产记录', char: '嘉', tag: '物产' },
+  { id: 36, category: '博物门', title: '椰子树', text: '椰树，高六七丈，叶如棕榈', source: '《南方草木状》',
+    options: ['高六七丈', '高六七尺', '高六七寸', '高六七米'], answer: 0,
+    extra: '古人首次描述椰子树——古代的南方印象', char: '椰', tag: '风物' }
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let state = {
+  collected: [],
+  exiled: [],
+  streaks: 0,
+  maxCollected: 0,
+  totalAns: 0,
+  correctAns: 0,
+  todayAnswered: [],
+  lastAnswerDate: null,
+  dailyStreak: 0,
+  lastDailyDate: null
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('gewuzhi_game');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state = { ...state, ...saved };
+    }
+  } catch(e) {}
+  // Ensure legacy compat: todayAnswered might be array of ids or empty
+  if (!Array.isArray(state.todayAnswered)) state.todayAnswered = [];
+  updateUI();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('gewuzhi_game', JSON.stringify(state));
+  } catch(e) {}
+}
+
+// ============================================================
+// UTILITY
+// ============================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function isCardOwned(id) { return state.collected.includes(id); }
+function isCardExiled(id) { return state.exiled.includes(id); }
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${tab}`).classList.add('active');
+  document.getElementById('content-area').scrollTop = 0;
+
+  if (tab === 'play') renderGame();
+  else if (tab === 'collection') renderCollection();
+  else if (tab === 'exile') renderExile();
+}
+
+// ============================================================
+// UPDATE UI
+// ============================================================
+function updateUI() {
+  const total = CARDS.length;
+  const owned = state.collected.length;
+  document.getElementById('collected-count').textContent = owned;
+  document.getElementById('streak-count').textContent = state.streaks;
+  document.getElementById('exile-badge').textContent = state.exiled.length;
+  document.getElementById('progress-fill').style.width = `${(owned/total)*100}%`;
+
+  const acc = state.totalAns > 0 ? Math.round(state.correctAns / state.totalAns * 100) : 0;
+  document.getElementById('acc-rate').textContent = acc + '%';
+}
+
+// ============================================================
+// GAME — RENDER
+// ============================================================
+let currentCardId = null;
+let answered = false;
+
+function getNextCard() {
+  // Collect all unanswered cards
+  const unanswered = CARDS.filter(c => !state.collected.includes(c.id));
+  if (unanswered.length === 0) return null;
+  return unanswered[Math.floor(Math.random() * unanswered.length)];
+}
+
+function renderGame() {
+  const container = document.getElementById('game-content');
+
+  // Check if all done
+  if (state.collected.length >= CARDS.length) {
+    container.innerHTML = `
+      <div class="empty-state fade-in">
+        <div class="empty-icon">🎉</div>
+        <p>全部收集完毕！</p>
+        <p class="hint">你已集齐36条格物志知识，已是「格物达人」</p>
+        <br>
+        <button class="btn primary" onclick="resetGame()" style="padding:12px 32px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">🔄 重新开始</button>
+      </div>
+    `;
+    answered = true;
+    return;
+  }
+
+  const card = getNextCard();
+  if (!card) {
+    container.innerHTML = `<div class="empty-state"><p>所有卡片已收集！</p></div>`;
+    return;
+  }
+
+  currentCardId = card.id;
+  answered = false;
+
+  const shuffledOptions = shuffle(card.options.map((opt, idx) => ({ text: opt, origIdx: idx })));
+
+  container.innerHTML = `
+    <div class="question-card fade-in">
+      <div class="category-tag">${CATEGORIES[card.category].icon} ${card.category}</div>
+      <div class="q-number">#${card.id}/${CARDS.length}</div>
+      <div class="q-source">出处：${card.source}</div>
+      <div class="q-text">「${card.text}」</div>
+      <div class="q-prompt">🤔 这段话在说什么？</div>
+      <div class="options" id="options-container">
+        ${shuffledOptions.map((opt, i) => `
+          <button class="option-btn" data-idx="${i}" data-orig="${opt.origIdx}" onclick="checkAnswer(${i}, ${opt.origIdx}, ${card.id})">
+            ${opt.text}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <div id="result-area"></div>
+  `;
+}
+
+// ============================================================
+// CHECK ANSWER
+// ============================================================
+function checkAnswer(clickedIdx, origIdx, cardId) {
+  if (answered) return;
+  answered = true;
+
+  const card = CARDS.find(c => c.id === cardId);
+  if (!card) return;
+
+  const isCorrect = origIdx === card.answer;
+  state.totalAns++;
+  if (isCorrect) state.correctAns++;
+
+  // Highlight correct/wrong
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    const orig = parseInt(btn.dataset.orig);
+    btn.classList.add('disabled');
+    if (orig === card.answer) {
+      btn.classList.add('correct');
+    }
+    if (i === clickedIdx && !isCorrect) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  if (isCorrect) {
+    state.streaks++;
+    state.maxCollected = Math.max(state.maxCollected, state.streaks);
+    if (!state.collected.includes(cardId)) {
+      state.collected.push(cardId);
+      // Check if category complete
+    }
+  } else {
+    state.streaks = 0;
+    if (!state.exiled.includes(cardId) && !state.collected.includes(cardId)) {
+      state.exiled.push(cardId);
+    }
+  }
+
+  saveState();
+  updateUI();
+
+  // Show result
+  document.getElementById('result-area').innerHTML = `
+    <div class="result-card ${isCorrect ? 'correct' : 'wrong'} fade-in">
+      <div class="result-icon">${isCorrect ? '✅' : '❌'}</div>
+      <div class="result-title">${isCorrect ? '答对了！' : '答错了！'}</div>
+      <div class="result-explain${isCorrect ? '' : ''}">
+        ${isCorrect ? card.extra : '正确答案是：「' + card.options[card.answer] + '」'}
+      </div>
+      ${!isCorrect ? `<div class="result-extra">💡 ${card.extra}</div>` : ''}
+      <div class="result-source">${card.source}</div>
+      <div class="action-row">
+        <button class="btn primary" onclick="nextQuestion()">下一题 →</button>
+        <button class="btn secondary" onclick="showCollectionTab()">🏺 看格物集</button>
+      </div>
+    </div>
+  `;
+
+  // Check full collection
+  if (state.collected.length >= CARDS.length) {
+    setTimeout(() => {
+      document.getElementById('modal-icon').textContent = '🎉';
+      document.getElementById('modal-title').textContent = '🎊 大功告成！';
+      document.getElementById('modal-text').textContent = `你集齐了全部36条格物志知识！\n古人智慧，尽在你手。`;
+      document.getElementById('modal-btn').textContent = '🏺 看看格物集';
+      document.getElementById('modal-btn').onclick = () => { closeModal(); switchTab('collection'); };
+      document.getElementById('modal').classList.add('show');
+    }, 600);
+  }
+}
+
+function nextQuestion() {
+  renderGame();
+  document.getElementById('content-area').scrollTop = 0;
+}
+
+function showCollectionTab() {
+  switchTab('collection');
+}
+
+// ============================================================
+// COLLECTION WALL
+// ============================================================
+function renderCollection() {
+  const container = document.getElementById('page-collection');
+  const owned = state.collected.length;
+  const total = CARDS.length;
+
+  // Stats
+  container.innerHTML = `
+    <div class="stats-summary fade-in">
+      <div class="stats-item">
+        <div class="s-value">${owned}</div>
+        <div class="s-label">已收集</div>
+      </div>
+      <div class="stats-item">
+        <div class="s-value">${total - owned}</div>
+        <div class="s-label">待发现</div>
+      </div>
+      <div class="stats-item">
+        <div class="s-value">${state.totalAns > 0 ? Math.round(state.correctAns/state.totalAns*100) : 0}%</div>
+        <div class="s-label">正确率</div>
+      </div>
+    </div>
+
+    <div class="category-filter" id="cat-filter">
+      <button class="cat-btn active" data-cat="all" onclick="filterCollection('all')">全部 <span class="cat-count">(${owned}/${total})</span></button>
+      ${Object.entries(CATEGORIES).map(([cat, info]) => {
+        const catCards = CARDS.filter(c => c.category === cat);
+        const catOwned = catCards.filter(c => state.collected.includes(c.id)).length;
+        return `<button class="cat-btn" data-cat="${cat}" onclick="filterCollection('${cat}')">${info.icon} ${cat} <span class="cat-count">(${catOwned}/${catCards.length})</span></button>`;
+      }).join('')}
+    </div>
+
+    <div id="collection-grid-container">
+      <div class="collection-grid fade-in" id="collection-grid"></div>
+    </div>
+  `;
+
+  renderCollectionGrid('all');
+}
+
+let currentCatFilter = 'all';
+
+function filterCollection(cat) {
+  currentCatFilter = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-cat="${cat}"]`).classList.add('active');
+  renderCollectionGrid(cat);
+}
+
+function renderCollectionGrid(category) {
+  const grid = document.getElementById('collection-grid');
+  if (!grid) return;
+
+  let cards = CARDS;
+  if (category !== 'all') {
+    cards = cards.filter(c => c.category === category);
+  }
+
+  grid.innerHTML = cards.map(c => {
+    const owned = state.collected.includes(c.id);
+    if (owned) {
+      return `
+        <div class="collect-slot owned">
+          <div class="slot-category">${c.category.substring(0,2)}</div>
+          <div class="slot-char">${c.char}</div>
+          <div class="slot-title">${c.title}</div>
+          <div class="slot-index">#${c.id}</div>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="collect-slot locked">
+        </div>
+      `;
+    }
+  }).join('');
+}
+
+// ============================================================
+// EXILE POOL
+// ============================================================
+function renderExile() {
+  const container = document.getElementById('page-exile');
+
+  if (state.exiled.length === 0) {
+    container.innerHTML = `
+      <div class="exile-pool-empty fade-in">
+        <div class="icon">🌊</div>
+        <p>流放池空空如也</p>
+        <p class="hint">答错了才会掉到这里哦</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="stats-summary fade-in">
+      <div class="stats-item">
+        <div class="s-value">${state.exiled.length}</div>
+        <div class="s-label">流放中</div>
+      </div>
+      <div class="stats-item">
+        <div class="s-value">${state.totalAns > 0 ? Math.round(state.correctAns/state.totalAns*100) : 0}%</div>
+        <div class="s-label">正确率</div>
+      </div>
+      <div class="stats-item">
+        <div class="s-value">
+          <button onclick="exileRedeem()" style="background:var(--qing-lv);color:white;border:none;padding:4px 14px;border-radius:20px;font-size:13px;cursor:pointer;">捞回来</button>
+        </div>
+        <div class="s-label">重新挑战</div>
+      </div>
+    </div>
+    ${state.exiled.map(id => {
+      const card = CARDS.find(c => c.id === id);
+      if (!card) return '';
+      return `
+        <div class="exile-card fade-in">
+          <div>
+            <div class="exile-text">「${card.text}」</div>
+            <div class="exile-source">${card.source}</div>
+          </div>
+          <div class="exile-answer">${card.options[card.answer]}</div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function exileRedeem() {
+  if (state.exiled.length === 0) return;
+  state.exiled = [];
+  saveState();
+  updateUI();
+  renderExile();
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetGame() {
+  if (confirm('确定要重新开始吗？所有进度将被清空。')) {
+    state.collected = [];
+    state.exiled = [];
+    state.streaks = 0;
+    state.maxCollected = 0;
+    state.totalAns = 0;
+    state.correctAns = 0;
+    state.todayAnswered = [];
+    saveState();
+    updateUI();
+    switchTab('play');
+  }
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+
+// Add reset button to header
+document.querySelector('.header').innerHTML += `
+  <div style="position:absolute;top:12px;right:20px;">
+    <button onclick="resetGame()" style="background:none;border:none;font-size:16px;cursor:pointer;opacity:0.4;color:var(--shen-he);" title="重置游戏">🔄</button>
+  </div>
+`;
+document.querySelector('.header').style.position = 'relative';
+
+renderGame();
+</script>
+</body>
+</html>

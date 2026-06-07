@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>四库·千秋 — 一部书的二百年</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--jin:#C9A96E;--jinL:#E8D8B8;--jinD:rgba(201,169,110,0.15);--zhu:#8B2500;--zhuL:#D4A088;--zhi:#F5F0E8;--hei:#2C1810;--qing:#4A7C59;--hui:#999;--rd:12px}
+html,body{height:100%;background:#1a0f08;font-family:'PingFang SC','Microsoft YaHei',sans-serif;color:var(--zhi);overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none}
+#app{max-width:420px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:linear-gradient(180deg,#1a0f08 0%,#2c1810 40%,#1a0f08 100%);overflow:hidden;position:relative}
+/* particles */
+#particles{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.p{position:absolute;background:rgba(201,169,110,0.12);border-radius:50%;animation:fl linear infinite}
+@keyframes fl{0%{transform:translateY(100vh)rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh)rotate(720deg);opacity:0}}
+/* header */
+.hdr{position:relative;z-index:2;padding:10px 16px 2px;text-align:center;flex-shrink:0}
+.hdr h1{font-size:20px;font-weight:700;color:var(--jin);letter-spacing:6px;text-shadow:0 2px 8px rgba(0,0,0,0.5)}
+.hdr .sub{font-size:10px;color:var(--zhuL);letter-spacing:2px;opacity:0.5;margin-top:-2px}
+.ch-hdr{text-align:center;padding:4px 16px 0;flex-shrink:0;z-index:2}
+.ch-hdr .cl{font-size:10px;color:var(--zhuL);letter-spacing:2px;opacity:0.5}
+.ch-hdr .ct{font-size:16px;color:var(--jin);letter-spacing:2px;margin-top:1px;font-family:'Georgia','KaiTi',serif}
+.ch-hdr .ce{font-size:10px;color:var(--hui);margin-top:1px}
+/* progress */
+.pb{position:relative;z-index:2;padding:4px 16px 8px;flex-shrink:0}
+.pb-track{width:100%;height:3px;background:var(--jinD);border-radius:2px;overflow:hidden}
+.pb-fill{height:100%;background:linear-gradient(90deg,var(--jin),var(--zhu));border-radius:2px;transition:width 0.6s ease;width:0%}
+.pb-dots{display:flex;justify-content:space-between;padding:0 4px;margin-top:-10px}
+.pb-dot{width:10px;height:10px;border-radius:50%;border:2px solid rgba(201,169,110,0.2);background:#1a0f08;display:flex;align-items:center;justify-content:center;font-size:6px;transition:all 0.4s;position:relative}
+.pb-dot.done{background:var(--jin);border-color:var(--jin);box-shadow:0 0 8px rgba(201,169,110,0.4)}
+.pb-dot.active{border-color:var(--jin);box-shadow:0 0 12px rgba(201,169,110,0.3);animation:pu 2s infinite}
+@keyframes pu{0%,100%{box-shadow:0 0 6px rgba(201,169,110,0.2)}50%{box-shadow:0 0 16px rgba(201,169,110,0.5)}}
+.pb-dot .dl{position:absolute;top:14px;font-size:7px;color:var(--hui);white-space:nowrap;opacity:0.6}
+/* content */
+.ct{flex:1;position:relative;z-index:2;overflow:hidden;padding:0 16px 6px}
+.scene{display:none;height:100%;flex-direction:column;animation:si 0.5s ease}
+.scene.active{display:flex}
+@keyframes si{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sa{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
+.sa::-webkit-scrollbar{width:2px}
+.sa::-webkit-scrollbar-thumb{background:var(--jinD);border-radius:2px}
+/* story box */
+.sb{background:rgba(44,24,16,0.85);border:1px solid var(--jinD);border-radius:var(--rd);padding:18px 16px;margin-bottom:12px}
+.sb .st{font-size:14px;line-height:1.8;color:var(--zhi);text-align:justify;letter-spacing:0.3px}
+.sb .st .hl{color:var(--jin);font-weight:600}
+.sb .st .em{color:var(--zhuL)}
+.sb .year{display:inline-block;background:var(--jinD);color:var(--jin);padding:1px 10px;border-radius:4px;font-size:11px;letter-spacing:1px;border:1px solid rgba(201,169,110,0.2);margin-bottom:6px}
+/* choice */
+.chcs{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.chc{padding:14px 16px;background:rgba(245,240,232,0.04);border:1px solid rgba(201,169,110,0.15);border-radius:10px;color:var(--zhi);font-size:13px;line-height:1.5;cursor:pointer;transition:all 0.2s;text-align:left;-webkit-tap-highlight-color:transparent}
+.chc:active{transform:scale(0.98)}.chc .ci{margin-right:6px}
+.chc.d{cursor:default;opacity:0.5}
+.chc.cr{background:rgba(74,124,89,0.15);border-color:var(--qing);color:#7FBF8F}
+.chc.wr{background:rgba(194,59,34,0.15);border-color:var(--zhu);color:#D4776A}
+/* result overlay */
+.ro{background:rgba(44,24,16,0.96);border:1px solid rgba(201,169,110,0.25);border-radius:var(--rd);padding:20px 18px;text-align:center;animation:sd 0.35s ease;margin-top:10px}
+@keyframes sd{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.ro .ri{font-size:36px;margin-bottom:4px}
+.ro .rt{font-size:18px;font-weight:700;color:var(--jin);margin-bottom:4px}
+.ro .rxt{font-size:13px;color:var(--zhuL);line-height:1.6;margin-bottom:10px}
+.ro .rf{background:var(--jinD);border-radius:8px;padding:10px;margin-bottom:12px;border-left:3px solid var(--jin);font-size:12px;line-height:1.6;text-align:left;color:var(--jinL)}
+.ro .rf .fl{font-size:10px;color:var(--jin);opacity:0.6;display:block;margin-bottom:3px;font-weight:600;letter-spacing:1px}
+.ro .btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ro .btn:active{transform:scale(0.97)}
+.ro .btn.nx{background:var(--jin);color:#1a0f08}
+.ro .btn.ry{background:rgba(201,169,110,0.1);color:var(--jin);border:1px solid rgba(201,169,110,0.3);margin-top:6px}
+/* sorting game */
+.sort-container{display:flex;flex-direction:column;gap:10px;height:100%}
+.sort-items{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px 0}
+.sort-item{padding:10px 16px;background:rgba(245,240,232,0.06);border:1px solid var(--jinD);border-radius:8px;color:var(--zhi);font-size:14px;cursor:pointer;transition:all 0.15s;min-width:60px;text-align:center}
+.sort-item:active{transform:scale(0.95)}
+.sort-item.sel{border-color:var(--jin);background:rgba(201,169,110,0.12)}
+.sort-item.done{opacity:0.4;pointer-events:none;background:rgba(74,124,89,0.12);border-color:var(--qing)}
+.sort-slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sort-slot{padding:12px 8px;background:rgba(44,24,16,0.6);border:2px dashed var(--jinD);border-radius:8px;text-align:center;min-height:60px;color:var(--jin);font-size:14px;font-weight:600;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sort-slot .placed{font-size:12px;color:var(--zhuL);font-weight:400}
+.sort-slot.hover{border-color:var(--jin);background:var(--jinD)}
+.sort-hint{text-align:center;font-size:12px;color:var(--hui);margin:4px 0}
+/* error spotting */
+.error-container{text-align:center}
+.error-passage{background:rgba(44,24,16,0.7);border:1px solid var(--jinD);border-radius:var(--rd);padding:20px 16px;margin-bottom:10px;text-align:justify;line-height:2.2;font-size:16px}
+.error-char{display:inline-block;padding:0 2px;cursor:pointer;border-radius:3px;transition:all 0.15s}
+.error-char.found{background:rgba(194,59,34,0.3);color:#D4776A;text-decoration:line-through}
+.error-char.miss{background:rgba(74,124,89,0.2);color:#7FBF8F}
+.error-status{text-align:center;font-size:12px;color:var(--hui);margin-top:4px}
+/* matching */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.match-item{padding:12px 8px;background:rgba(245,240,232,0.04);border:1px solid var(--jinD);border-radius:8px;text-align:center;cursor:pointer;font-size:13px;color:var(--zhi);transition:all 0.15s}
+.match-item:active{transform:scale(0.97)}
+.match-item.sel{border-color:var(--jin);background:var(--jinD)}
+.match-item.matched{border-color:var(--qing);background:rgba(74,124,89,0.15);opacity:0.5;pointer-events:none}
+.match-item.wrong{border-color:var(--zhu);background:rgba(194,59,34,0.12);animation:sh 0.3s}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* quiz */
+.qz-opt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.qz-btn{padding:14px 8px;background:rgba(245,240,232,0.04);border:1px solid var(--jinD);border-radius:10px;text-align:center;cursor:pointer;font-size:14px;color:var(--zhi);transition:all 0.15s}
+.qz-btn:active{transform:scale(0.97)}
+.qz-btn.d{pointer-events:none;opacity:0.4}
+.qz-btn.cr{background:rgba(74,124,89,0.2);border-color:var(--qing);color:#7FBF8F}
+.qz-btn.wr{background:rgba(194,59,34,0.12);border-color:var(--zhu);color:#D4776A}
+/* ending */
+.end{text-align:center;padding:20px 0}
+.end .ei{font-size:56px;margin-bottom:8px}
+.end h2{font-family:'Georgia','KaiTi',serif;font-size:22px;color:var(--jin);letter-spacing:4px}
+.end .ed{font-size:13px;color:var(--zhuL);line-height:1.8;margin:10px 0}
+.end .es{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.end .es .ev{font-size:24px;font-weight:700;color:var(--jin)}
+.end .es .el{font-size:11px;color:var(--hui)}
+.end .btn{padding:14px 40px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px}
+.end .btn.rs{background:var(--jin);color:#1a0f08}
+/* notification */
+.notif{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(44,24,16,0.95);border:1px solid var(--jin);border-radius:12px;padding:12px 20px;z-index:50;text-align:center;backdrop-filter:blur(8px);animation:ni 0.4s ease,no 0.4s ease 2s forwards;pointer-events:none}
+@keyframes ni{from{opacity:0;transform:translateX(-50%)translateY(-16px)}to{opacity:1;transform:translateX(-50%)translateY(0)}}
+@keyframes no{from{opacity:1}to{opacity:0;transform:translateX(-50%)translateY(-16px)}}
+.notif .nn{font-size:14px;font-weight:600;color:var(--jin)}
+/* person card */
+.pcard{display:flex;align-items:center;gap:10px;background:rgba(44,24,16,0.6);border:1px solid var(--jinD);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.pcard .pi{font-size:28px;width:36px;text-align:center}
+.pcard .pn{font-size:14px;font-weight:600;color:var(--jin)}
+.pcard .pd{font-size:11px;color:var(--zhuL);opacity:0.7}
+/* collection bar */
+.cbar{background:rgba(44,24,16,0.5);border-radius:6px;padding:6px 10px;margin-bottom:8px;display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.cbar .cp{font-size:8px;padding:2px 6px;border-radius:8px;background:var(--jinD);color:var(--jin)}
+.cbar .cp.got{background:rgba(74,124,89,0.2);color:#7FBF8F}
+@media(max-width:360px){.hdr h1{font-size:17px}.sb .st{font-size:13px}}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="particles"></div>
+<div class="hdr"><h1>四库·千秋</h1><div class="sub">—— 一部书的二百年</div></div>
+<div class="ch-hdr"><div class="cl" id="cl">第 壹 幕</div><div class="ct" id="ct">经部·编纂</div><div class="ce" id="ce">清·乾隆三十七年（1772）</div></div>
+<div class="pb"><div class="pb-track"><div class="pb-fill" id="pf"></div></div><div class="pb-dots" id="pds"></div></div>
+<div class="ct"><div class="sa" id="sa"><div id="sc"></div></div></div>
+</div>
+<div id="ntf"></div>
+<script>
+// ============================================================
+// 人物图鉴
+// ============================================================
+const PEOPLE = [
+  {id:'ql',name:'乾隆',icon:'👑',role:'弘历，清朝第六位皇帝',desc:'下令编纂四库全书。雄才大略与文字狱并存——既有"十全武功"的自信，又因《字贯》案株连多人。'},
+  {id:'jxl',name:'纪晓岚',icon:'📝',role:'纪昀，四库全书总纂官',desc:'总揽四库编纂大权。学识渊博但性格圆滑，在文字狱的夹缝中保全了自己和众多学者。"平生不食鸭"的怪癖闻名。'},
+  {id:'dz',name:'戴震',icon:'📚',role:'经部主编，考据学大师',desc:'清代考据学第一人。被特招入四库馆，主持经部编纂。不到两年积劳成疾，1777年病逝于四库馆。'},
+  {id:'yk',name:'姚鼐',icon:'✍️',role:'集部纂修，桐城派宗师',desc:'桐城派古文大家。在四库馆只待了一年便辞官归隐，专心著述。认为四库馆"束缚人才"。'},
+  {id:'lx',name:'陆锡熊',icon:'🔍',role:'总校官，校勘学大家',desc:'负责四库全书的最终校对。因长期伏案校书，双目几乎失明。1785年因校书劳累过度，吐血而亡。'},
+  {id:'hsz',name:'护书人',icon:'🛡️',role:'历代守护文溯阁本的人',desc:'从民国到现代，一代代守书人在战火中保护文溯阁本。他们的名字大多不为人知，但书还在。'}
+];
+
+// ============================================================
+// 游戏数据
+// ============================================================
+const SCENES = [
+  // ===== 第一幕：经部·编纂 =====
+  {
+    act:1, title:'经部·编纂', era:'清·乾隆三十七年（1772）', label:'第 壹 幕',
+    type:'story',
+    story:[
+      '乾隆三十七年（1772年），正月初四。\n\n紫禁城养心殿内，<span class="hl">乾隆皇帝</span>下了一道震动天下的谕旨：\n\n<span class="em">"朕稽古右文，……今内府藏书，插架不为不富，然古今著作之手，无虑数千百家……"</span>\n\n翻译过来就是：<span class="hl">朕要编一部超级大书</span>，把天下所有的书都收进来。',
+      '这道谕旨，开启了中国历史上<span class="hl">规模最大的文化工程</span>——编纂《四库全书》。\n\n此后十年，全国各地的书籍源源不断送往北京。\n参与编纂者达<span class="hl">380余人</span>，\n抄写者<span class="hl">3,800余人</span>。\n\n一个你从未听过的故事，即将展开——'
+    ]
+  },
+  {
+    act:1, title:'经部·编纂', era:'征书与抉择', label:'第 壹 幕',
+    type:'choice',
+    person:'ql',
+    question:'乾隆下诏征书，但各地藏书家怕官府借书不还，纷纷推脱。\n你作为编修官，如何说服他们献书？',
+    choices:[
+      {text:'威胁——不献书就是抗旨',icon:'⚔️',correct:false,
+        result:'乾隆确实用了这招——但副作用很大。很多藏书家宁愿烧书也不愿上交，反而造成更大的损失。',
+        fact:'《字贯》案中，江西巡抚海成以"不遗余力"征书为名，查出徐述夔《一柱楼诗》有"违碍"字句，导致徐氏满门抄斩，数百藏书家被牵连。'},
+      {text:'奖励——献书者赏《古今图书集成》',icon:'🎁',correct:false,
+        result:'流弊更大！因为《古今图书集成》太珍贵，反而只有大户人家才愿意献书——中小藏书家根本不敢来。',
+        fact:'乾隆后来发现这个弊端，改为"抄录后归还原书+赏赐绢帛"。但抄录过程中，仍有大量珍贵版本被"遗失"。'},
+      {text:'抄录后归还——书还是你的，朝廷只留副本',icon:'📜',correct:true,
+        result:'明智之选！乾隆最终采纳了这个方案：各地将书送到四库馆，抄录一份副本后，原书归还主人。\n\n这个方案让全国藏书家放下了戒心，四年内征得图书<span class="hl">13,000余种</span>。',
+        fact:'为保证归还率，每一本书都要登记造册，注明来源、册数、页数，抄完后由专人核对无误才发还。四库馆为此设立了专门的"收发处"。'}
+    ]
+  },
+  {
+    act:1, title:'经部·编纂', era:'图书分类', label:'第 壹 幕',
+    type:'sorting',
+    person:'jxl',
+    hint:'纪晓岚考你：把这些书归到经/史/子/集四部里',
+    completeText:'全部归对！\n\n纪晓岚捋了捋胡子："不错，看来你对四部分类法已经入门了。\n\n经史子集——经部是儒家经典，史部是历史地理，子部是诸子百家，集部是文学总集。\n四部之下又分44类，66属。这套体系沿用至今。"',
+    categories:['经部','史部','子部','集部'],
+    items:[
+      {name:'诗经',cat:'经部'},{name:'尚书',cat:'经部'},{name:'春秋',cat:'经部'},
+      {name:'史记',cat:'史部'},{name:'汉书',cat:'史部'},{name:'资治通鉴',cat:'史部'},
+      {name:'庄子',cat:'子部'},{name:'韩非子',cat:'子部'},{name:'本草纲目',cat:'子部'},
+      {name:'楚辞',cat:'集部'},{name:'文选',cat:'集部'},{name:'杜工部集',cat:'集部'}
+    ]
+  },
+  {
+    act:1, title:'经部·编纂', era:'抄写与校对', label:'第 壹 幕',
+    type:'errorspot',
+    person:'lx',
+    intro:'四库全书全部手抄完成。你被分配到校对处——找出抄写员的错别字。\n\n下面是一段抄本，有3个错字，<span class="hl">点出它们</span>。',
+    successText:'全部找出！\n\n陆锡熊擦了擦汗："好眼力！3,800人同时抄写，没有严格的校对制度，这部书就毁了。"\n\n四库全书实行<span class="hl">三校制度</span>：\n初校→复校→总校。\n每通过一校，在书后盖一个印章。\n三印齐全，才算合格。',
+    failureText:'漏掉了几个。不过没关系——陆锡熊说："校书如扫落叶，扫完一层还有一层。"',
+    passage:'每料真桐油三斤，入香油一斤。此墨法之要也。然桐油非川产者不佳，香油须新榨乃良。和墨之时，春秋用油三份，夏用二份，冬用四份。墨成之后，置阴处百廿日，方可使用。',
+    errors:[
+      {pos:7,wrong:'由',correct:'油'},
+      {pos:31,wrong:'佳',correct:'嘉'},
+      {pos:57,wrong:'份',correct:'分'}
+    ],
+    hintChars:'由佳份'
+  },
+  {
+    act:1, title:'经部·编纂', era:'纪晓岚的智慧', label:'第 壹 幕',
+    type:'story',
+    person:'jxl',
+    story:[
+      '编纂十年，纪晓岚经历了无数惊心动魄的时刻。\n\n有一次，乾隆皇帝亲自抽查一部书，发现其中有一处"违碍"文字。\n乾隆大怒，要追究编纂者的责任。\n\n纪晓岚跪在地上，不慌不忙地说：\n<span class="em">"皇上，这部书是臣亲手校对的。臣年老眼花，实在没看出来。臣罪该万死。"</span>\n\n乾隆看了他一眼，最终只罚了他一年俸禄。',
+      '其实，纪晓岚早就发现了那处文字。\n但他知道——如果把责任推到下面的抄写员身上，那人必死无疑。\n所以他揽在自己身上，用"年老眼花"四个字，保全了一条人命。\n\n这就是纪晓岚——<span class="hl">他圆滑，但从不害人。</span>\n\n四库编纂十年，没有一个编纂人员因文字狱被处死，这在乾隆朝是个奇迹。'
+    ]
+  },
+
+  // ===== 第二幕：史部·入藏 =====
+  {
+    act:2, title:'史部·入藏', era:'清·乾隆四十六年（1781）', label:'第 贰 幕',
+    type:'story',
+    story:[
+      '乾隆四十六年（1781年），四库全书全部抄写完成。\n\n乾隆皇帝十分满意，决定建造<span class="hl">七座藏书楼</span>，分别收藏七部四库全书。\n\n这就是著名的<span class="hl">"南北七阁"</span>——\n\n北方四座（北四阁）：\n文渊阁（紫禁城）、文源阁（圆明园）\n文津阁（避暑山庄）、文溯阁（沈阳）\n\n南方三座（南三阁）：\n文宗阁（镇江）、文汇阁（扬州）、文澜阁（杭州）',
+      '七阁的命名都带"氵"旁——取"以水克火"之意。\n\n但水火无情，\n七阁的命运，\n各不相同……'
+    ]
+  },
+  {
+    act:2, title:'史部·入藏', era:'七阁配对', label:'第 贰 幕',
+    type:'matching',
+    hint:'把七阁和它们的地点配对',
+    completeText:'全对！七阁的命运各不相同——\n\n• <span class="hl">文源阁</span>：1860年毁于英法联军\n• <span class="hl">文宗阁、文汇阁</span>：毁于太平天国战火\n• <span class="hl">文澜阁</span>：部分散佚，后经丁氏兄弟补抄\n• <span class="hl">文渊阁</span>：现存台北故宫博物院\n• <span class="hl">文津阁</span>：现存北京国家图书馆\n• <span class="hl">文溯阁</span>：现存甘肃省图书馆\n\n七阁之中，只有<span class="hl">文溯阁本保存最完整</span>。',
+    pairs:[
+      {left:'文渊阁',right:'北京紫禁城'},
+      {left:'文源阁',right:'北京圆明园'},
+      {left:'文津阁',right:'承德避暑山庄'},
+      {left:'文溯阁',right:'沈阳故宫'},
+      {left:'文宗阁',right:'江苏镇江'},
+      {left:'文汇阁',right:'江苏扬州'},
+      {left:'文澜阁',right:'浙江杭州'}
+    ]
+  },
+  {
+    act:2, title:'史部·入藏', era:'四库四色', label:'第 贰 幕',
+    type:'choice',
+    person:'ql',
+    question:'四库装帧用四种颜色区分四部。\n你知道经/史/子/集各用什么颜色吗？',
+    choices:[
+      {text:'经·绿 / 史·红 / 子·蓝 / 集·灰',icon:'🎨',correct:true,
+        result:'全对！\n\n经部——<span class="hl">绿色</span>（象征春天万物生长——经学是万学之源）\n史部——<span class="hl">红色</span>（象征夏天——历史炽热而真实）\n子部——<span class="hl">蓝色</span>（象征秋天——百家争鸣如秋空之辽阔）\n集部——<span class="hl">灰色</span>（象征冬天——文章如冬雪之静美）\n\n四色代表着四季——四库全书是"四季皆可读"之书。',
+        fact:'四色装帧是乾隆亲自定的。他还在每册书首页盖"乾隆御览之宝"玺印，尾页盖"太上皇帝之宝"。'},
+      {text:'经·红 / 史·绿 / 子·灰 / 集·蓝',icon:'🎨',correct:false,
+        result:'不对。经部是绿色——因为经学是万学之源，好比春天万物生长。',
+        fact:'四色代表四季，这个创意来自乾隆本人。他还为七阁题写了匾额和楹联。'},
+      {text:'经·蓝 / 史·灰 / 子·红 / 集·绿',icon:'🎨',correct:false,
+        result:'不对。正确答案是：经·绿 / 史·红 / 子·蓝 / 集·灰。\n\n四季之色，寓意"四季常读"。',
+        fact:'四库全书的函套也用四种颜色的丝绸制作。仅装帧一项，就花费白银数万两。'}
+    ]
+  },
+
+  // ===== 第三幕：子部·守护（从护书录改编） =====
+  {
+    act:3, title:'子部·守护', era:'民国三年（1914）', label:'第 叁 幕',
+    type:'story',
+    story:[
+      '一百多年过去了。\n\n清朝灭亡，民国建立。\n沈阳局势动荡，文溯阁本岌岌可危。\n\n护书人面临一个艰难的选择——\n\n是原地死守，还是冒险南迁？'
+    ]
+  },
+  {
+    act:3, title:'子部·守护', era:'南迁之路', label:'第 叁 幕',
+    type:'choice',
+    question:'1914年，奉天（沈阳）局势紧张。文溯阁本四库全书面临威胁，你决定：',
+    choices:[
+      {text:'秘密南迁至北京保存',icon:'🚚',correct:true,
+        result:'1914年，文溯阁本装箱秘密运至北京，存放于故宫保和殿。\n\n这次搬迁是有史以来最大规模的古籍搬运——\n共装<span class="hl">6,144函</span>，\n用了整整一列火车。',
+        fact:'1925年，文溯阁本从北京运回沈阳。但仅仅6年后，九一八事变爆发，沈阳沦陷。'},
+      {text:'原地死守，人在书在',icon:'⚔️',correct:false,
+        result:'护书人最终选择了更理性的方式——南迁。事实证明这是对的。',
+        fact:'1914年沈阳局势急剧恶化，如果原地死守，文溯阁本很可能在随后的战乱中散失。'},
+      {text:'分散藏在沈阳民间',icon:'🏠',correct:false,
+        result:'散落民间风险太大。一旦散失，就再也凑不齐了。',
+        fact:'文溯阁本最珍贵之处在于"完整"——七阁本中，文溯阁本是保存最完整的一部。'}
+    ]
+  },
+  {
+    act:3, title:'子部·守护', era:'流徙岁月', label:'第 叁 幕',
+    type:'choice',
+    question:'1931年，九一八事变，沈阳沦陷。\n日军觊觎文溯阁本，你作为守书人，如何应对？',
+    choices:[
+      {text:'以"整理造册"为由拖延',icon:'⏳',correct:true,
+        result:'护书人以"古籍需要逐册登记造册"为由，一拖就是三年。\n\n期间多次拒绝日军的"检查"要求，\n保护了国宝不被运往日本。',
+        fact:'文溯阁本在日占时期（1931-1945）曾多次被要求运往东京，均被中方管理人员以各种理由拖延。这是护书史上的一段传奇。'},
+      {text:'公开抗议，拒绝交出',icon:'✊',correct:false,
+        result:'在日占区直接对抗，只会招致更严厉的镇压。',
+        fact:'当时东北已沦陷，护书人选择了"拖延战术"——表面配合，实际拖延。'},
+      {text:'偷偷运出沈阳',icon:'🏃',correct:false,
+        result:'日军已控制所有交通要道，偷运几乎不可能。',
+        fact:'文溯阁本一直在沈阳原地保存到1945年抗战胜利。期间护书人用各种方式保护它不被运走。'}
+    ]
+  },
+  {
+    act:3, title:'子部·守护', era:'迁往兰州', label:'第 叁 幕',
+    type:'choice',
+    question:'1965年，中央政府决定为文溯阁本寻找永久保存地。三个方案，你选哪个？',
+    choices:[
+      {text:'甘肃兰州——气候干燥',icon:'🏜️',correct:true,
+        result:'<span class="hl">明智之选！</span>\n\n甘肃气候干燥，年均湿度仅40%-50%，最适合古籍保存。\n\n1965年，文溯阁本正式迁往兰州，\n由<span class="hl">甘肃省图书馆</span>收藏。\n\n为此专门修建了恒温恒湿专库——\n一直守护至今。',
+        fact:'文溯阁本迁到兰州后，甘肃省图书馆历代馆长都把保护它视为最高使命。2005年启动数字化扫描，2010年完成全部扫描。'},
+      {text:'北京——条件最好',icon:'🏛️',correct:false,
+        result:'北京已有文津阁本，且气候干燥度不如兰州。',
+        fact:'乾隆建七阁时就有意分散收藏——"散不宜聚"，避免一毁俱毁。'},
+      {text:'沈阳原地不动',icon:'🏯',correct:false,
+        result:'沈阳冬季供暖产生的温湿度波动对古籍损伤太大。',
+        fact:'沈阳文溯阁原址已不是原貌，冬季温差大，不适合长期保存古籍。'}
+    ]
+  },
+
+  // ===== 第四幕：集部·新生 =====
+  {
+    act:4, title:'集部·新生', era:'2005年至今', label:'第 肆 幕',
+    type:'story',
+    story:[
+      '今天，文溯阁本四库全书\n静静地躺在甘肃省图书馆的专库里。\n\n恒温恒湿的玻璃柜中，\n泛黄的纸张，墨迹依然清晰如昨。\n\n但新的问题出现了——\n<span class="hl">如何让更多人看到它？</span>',
+      '2005年起，数字化扫描启动。\n每一页都要小心翼翼地翻拍，\n不能有丝毫损伤。\n\n工作人员戴上白手套，\n一页一页地翻，\n一页一页地拍。\n\n五年时间，\n拍摄了<span class="hl">79,030卷</span>全部书页。\n\n今天，你可以在手机上看到它。\n——你正在玩的这个游戏就是一个例证。'
+    ]
+  },
+  {
+    act:4, title:'集部·新生', era:'千秋之问', label:'第 肆 幕',
+    type:'quiz',
+    questions:[
+      {q:'《四库全书》一共抄了多少部？',opts:['四部','七部','九部','十二部'],ans:1,hint:'南北七阁，各藏一部。'},
+      {q:'文溯阁本现存哪里？',opts:['沈阳故宫','北京国图','甘肃省图书馆','台北故宫'],ans:2,hint:'就在甘肃兰州。'},
+      {q:'四库全书的四色装帧中，经部是什么颜色？',opts:['红色','蓝色','绿色','灰色'],ans:2,hint:'春天——万学之源。'},
+      {q:'四库全书的总纂官是谁？',opts:['戴震','纪晓岚','姚鼐','陆锡熊'],ans:1,hint:'他还有"铁齿铜牙"的外号。'},
+      {q:'四库全书全部手抄，共有多少抄写员？',opts:['约800人','约1,800人','约3,800人','约8,000人'],ans:2,hint:'这是一支庞大的"抄书大军"。'}
+    ]
+  },
+  {
+    act:4, title:'集部·新生', era:'千秋·终', label:'第 肆 幕',
+    type:'ending'
+  }
+];
+
+// ============================================================
+// 游戏状态
+// ============================================================
+let state={idx:0,mistakes:0,completed:[],collectedPeople:[],sortDone:{},matchDone:{},quizDone:0};
+let answered=false,resultShow=false;
+let storyCharIdx=0,storyTimer=null,storyDone=false,storyPart=0;
+let sortSel=null,matchSel=null,matchWrongTimer=null;
+let errorsFound=[],errorsMissed=0;
+
+function loadState(){
+  try{const s=localStorage.getItem('sikuqianqiu');if(s)Object.assign(state,JSON.parse(s))}catch(e){}
+}
+function saveState(){try{localStorage.setItem('sikuqianqiu',JSON.stringify(state))}catch(e){}}
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+
+// ============================================================
+// 粒子
+// ============================================================
+function initParticles(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<15;i++){const p=document.createElement('div');p.className='p';const s=2+Math.random()*3;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'%';p.style.animationDuration=(15+Math.random()*20)+'s';p.style.animationDelay=Math.random()*15+'s';c.appendChild(p)}
+}
+
+// ============================================================
+// 渲染主函数
+// ============================================================
+function render(){
+  const sc=SCENES[state.idx];
+  if(!sc)return;
+  answered=false;resultShow=false;
+  document.getElementById('cl').textContent=sc.label;
+  document.getElementById('ct').textContent=sc.title;
+  document.getElementById('ce').textContent=sc.era;
+  document.getElementById('pf').style.width=(state.idx/SCENES.length*100)+'%';
+  renderDots();
+
+  const acts=['编纂','入藏','守护','新生'];
+  const actIdx=sc.act-1;
+  if(actIdx>=0&&actIdx<4){
+    const milestones=[0,5,8,11];
+    document.getElementById('pds').innerHTML=acts.map((a,i)=>{
+      const ms=milestones[i];
+      const done=state.idx>ms+(i<3?2:0);
+      const active=state.idx===ms;
+      return `<div class="pb-dot ${done?'done':''} ${active?'active':''}" style="margin-top:6px">${done?'✓':''}<span class="dl">${a}</span></div>`;
+    }).join('');
+  }
+
+  const container=document.getElementById('sc');
+  switch(sc.type){
+    case 'story':renderStory(sc,container);break;
+    case 'choice':renderChoice(sc,container);break;
+    case 'sorting':renderSorting(sc,container);break;
+    case 'errorspot':renderErrorSpot(sc,container);break;
+    case 'matching':renderMatching(sc,container);break;
+    case 'quiz':renderQuiz(sc,container);break;
+    case 'ending':renderEnding(container);break;
+  }
+}
+
+function renderDots(){
+  // handled inside render()
+}
+
+// ============================================================
+// 故事
+// ============================================================
+function renderStory(sc,container){
+  container.innerHTML=`<div class="scene active">
+    <div class="sb"><div class="st" id="st"></div></div>
+    <div style="flex:1"></div>
+    ${sc.person?`<div class="pcard"><div class="pi">${PEOPLE.find(p=>p.id===sc.person).icon}</div><div class="pn">${PEOPLE.find(p=>p.id===sc.person).name}</div><div class="pd">${PEOPLE.find(p=>p.id===sc.person).role}</div></div>`:''}
+    <div id="sn" style="display:none"><div class="chcs"><button class="chc" onclick="advance()"><span class="ci">→</span> 继续</button></div></div>
+  </div>`;
+  storyPart=0;storyDone=false;storyCharIdx=0;
+  if(storyTimer)clearInterval(storyTimer);
+  typeText(document.getElementById('st'),sc.story[0],()=>{
+    storyDone=true;
+    if(sc.story.length===1)document.getElementById('sn').style.display='block';
+  });
+}
+
+function typeText(el,text,onDone){
+  el.innerHTML='';let idx=0;
+  function add(){
+    if(idx<text.length){
+      el.innerHTML=text.substring(0,idx+1).replace(/\n/g,'<br>');
+      idx++;
+      storyTimer=setTimeout(add,20);
+    }else{
+      el.innerHTML=text.replace(/\n/g,'<br>');
+      if(onDone)onDone();
+    }
+  }
+  if(storyTimer)clearInterval(storyTimer);
+  add();
+}
+
+// 故事点击
+document.getElementById('sa')?.addEventListener('click',function(e){
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='story')return;
+  const sn=document.getElementById('sn');
+  if(!storyDone&&storyTimer){
+    clearInterval(storyTimer);storyTimer=null;
+    const el=document.getElementById('st');
+    el.innerHTML=sc.story[storyPart].replace(/\n/g,'<br>');
+    storyDone=true;
+    if(storyPart>=sc.story.length-1&&sn)sn.style.display='block';
+    return;
+  }
+  if(storyDone&&storyPart<sc.story.length-1){
+    storyPart++;storyCharIdx=0;storyDone=false;
+    if(sn)sn.style.display='none';
+    typeText(document.getElementById('st'),sc.story[storyPart],()=>{
+      storyDone=true;
+      if(storyPart>=sc.story.length-1){
+        const sn2=document.getElementById('sn');
+        if(sn2)sn2.style.display='block';
+      }
+    });
+  }
+},true);
+
+// ============================================================
+// 抉择
+// ============================================================
+function renderChoice(sc,container){
+  container.innerHTML=`<div class="scene active">
+    <div class="sb"><div class="st"><div class="year">⚡ 护书抉择</div>${sc.question.replace(/\n/g,'<br>')}</div></div>
+    ${sc.person?`<div class="pcard"><div class="pi">${PEOPLE.find(p=>p.id===sc.person).icon}</div><div class="pn">${PEOPLE.find(p=>p.id===sc.person).name}</div><div class="pd">${PEOPLE.find(p=>p.id===sc.person).role}</div></div>`:''}
+    <div class="chcs" id="clist">${sc.choices.map((c,i)=>`<button class="chc" data-i="${i}" onclick="makeChoice(${i})"><span class="ci">${c.icon}</span>${c.text.replace(/\n/g,'<br>')}</button>`).join('')}</div>
+    <div id="rc"></div>
+  </div>`;
+}
+
+function makeChoice(idx){
+  if(answered)return;
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='choice')return;
+  answered=true;
+  const ch=sc.choices[idx];
+  document.querySelectorAll('.chc').forEach((b,i)=>{
+    b.classList.add('d');
+    if(sc.choices[i].correct)b.classList.add('cr');
+    if(i===idx&&!ch.correct)b.classList.add('wr');
+  });
+  if(!ch.correct)state.mistakes++;
+  // Collect person
+  if(sc.person&&!state.collectedPeople.includes(sc.person)){
+    state.collectedPeople.push(sc.person);
+    showNotif(`📖 解锁人物：${PEOPLE.find(p=>p.id===sc.person).name}`);
+  }
+  saveState();
+  document.getElementById('rc').innerHTML=`<div class="ro"><div class="ri">${ch.correct?'📜':'📖'}</div><div class="rt">${ch.correct?'护书成功！':'此路不通'}</div><div class="rxt">${ch.result.replace(/\n/g,'<br>')}</div><div class="rf"><span class="fl">📌 历史小记</span>${ch.fact}</div><button class="btn nx" onclick="advance()">继续 →</button></div>`;
+}
+
+// ============================================================
+// 分类排序
+// ============================================================
+function renderSorting(sc,container){
+  const done=state.sortDone[state.idx]||[];
+  const remaining=sc.items.filter((_,i)=>!done.includes(i));
+  container.innerHTML=`<div class="scene active sort-container">
+    <div class="sb" style="margin-bottom:6px"><div class="st"><div class="year">📚 图书分类</div>${sc.hint}</div></div>
+    <div class="sort-hint">👆 点选一本书 → 再点对应的部类放置</div>
+    <div class="sort-items" id="sit">${sc.items.map((item,i)=>`<div class="sort-item ${done.includes(i)?'done':''}" data-i="${i}" onclick="sortSelect(${i})">${item.name}</div>`).join('')}</div>
+    <div class="sort-slots">${sc.categories.map(c=>`<div class="sort-slot" data-c="${c}" onclick="sortPlace('${c}')">${c}<span class="placed" id="sl-${c.replace(/[^a-zA-Z0-9]/g,'')}"></span></div>`).join('')}</div>
+  </div>`;
+  // Show already placed items
+  sc.items.forEach((item,i)=>{
+    if(done.includes(i)){
+      const slotId='sl-'+item.cat.replace(/[^a-zA-Z0-9]/g,'');
+      const el=document.getElementById(slotId);
+      if(el)el.textContent=(el.textContent?el.textContent+', ':'')+item.name;
+    }
+  });
+}
+
+let sortSel=null;
+function sortSelect(idx){
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='sorting')return;
+  const done=state.sortDone[state.idx]||[];
+  if(done.includes(idx))return;
+  sortSel=idx;
+  document.querySelectorAll('.sort-item').forEach(el=>el.classList.remove('sel'));
+  const items=document.querySelectorAll('.sort-item');
+  if(items[idx])items[idx].classList.add('sel');
+}
+
+function sortPlace(cat){
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='sorting'||sortSel===null)return;
+  const item=sc.items[sortSel];
+  if(!item||item.cat!==cat){
+    // wrong
+    sortSel=null;
+    document.querySelectorAll('.sort-item').forEach(el=>el.classList.remove('sel'));
+    return;
+  }
+  // correct
+  if(!state.sortDone[state.idx])state.sortDone[state.idx]=[];
+  state.sortDone[state.idx].push(sortSel);
+  saveState();
+  // update UI
+  const slotId='sl-'+cat.replace(/[^a-zA-Z0-9]/g,'');
+  const slot=document.getElementById(slotId);
+  if(slot)slot.textContent=(slot.textContent?slot.textContent+', ':'')+item.name;
+  const items=document.querySelectorAll('.sort-item');
+  if(items[sortSel]){items[sortSel].classList.remove('sel');items[sortSel].classList.add('done');}
+  sortSel=null;
+
+  // Check if all done
+  const allDone=sc.items.filter((_,i)=>!(state.sortDone[state.idx]||[]).includes(i)).length===0;
+  if(allDone){
+    // Collect person
+    if(sc.person&&!state.collectedPeople.includes(sc.person)){
+      state.collectedPeople.push(sc.person);
+      showNotif(`📖 解锁人物：${PEOPLE.find(p=>p.id===sc.person).name}`);
+    }
+    document.getElementById('rc')?.remove();
+    const rc=document.createElement('div');rc.id='rc';
+    rc.innerHTML=`<div class="ro"><div class="ri">✅</div><div class="rt">分类完成！</div><div class="rxt">${sc.completeText.replace(/\n/g,'<br>')}</div><button class="btn nx" onclick="advance()">继续 →</button></div>`;
+    document.querySelector('.sort-container').appendChild(rc);
+    saveState();
+  }
+}
+
+// ============================================================
+// 找错别字
+// ============================================================
+function renderErrorSpot(sc,container){
+  errorsFound=[];errorsMissed=0;
+  container.innerHTML=`<div class="scene active error-container">
+    <div class="sb" style="margin-bottom:6px"><div class="st"><div class="year">🔍 校对</div>${sc.intro.replace(/\n/g,'<br>')}</div></div>
+    <div class="error-passage" id="ep">${sc.passage.split('').map((c,i)=>{
+      const isErr=sc.errors.some(e=>e.pos===i);
+      return `<span class="error-char ${isErr?'is-err':''}" data-i="${i}" data-err="${isErr?'1':'0'}" onclick="checkError(${i})">${c}</span>`;
+    }).join('')}</div>
+    <div class="error-status" id="es">已找到 ${errorsFound.length}/${sc.errors.length} 个错字</div>
+  </div>`;
+}
+
+function checkError(idx){
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='errorspot')return;
+  if(errorsFound.includes(idx))return;
+  const spans=document.querySelectorAll('#ep .error-char');
+  const span=spans[idx];
+  if(!span)return;
+  const isErr=sc.errors.some(e=>e.pos===idx);
+  if(isErr){
+    span.classList.add('found');
+    span.textContent=sc.errors.find(e=>e.pos===idx).correct;
+    errorsFound.push(idx);
+    document.getElementById('es').textContent=`已找到 ${errorsFound.length}/${sc.errors.length} 个错字`;
+    if(errorsFound.length>=sc.errors.length){
+      if(sc.person&&!state.collectedPeople.includes(sc.person)){
+        state.collectedPeople.push(sc.person);
+        showNotif(`📖 解锁人物：${PEOPLE.find(p=>p.id===sc.person).name}`);
+      }
+      document.getElementById('es').innerHTML=`<div class="ro"><div class="ri">✅</div><div class="rt">校对完成！</div><div class="rxt">${sc.successText.replace(/\n/g,'<br>')}</div><button class="btn nx" onclick="advance()">继续 →</button></div>`;
+      saveState();
+    }
+  } else {
+    span.classList.add('miss');
+    errorsMissed++;
+  }
+}
+
+// ============================================================
+// 配对
+// ============================================================
+function renderMatching(sc,container){
+  matchSel=null;
+  const paired=state.matchDone[state.idx]||[];
+  const leftItems=sc.pairs.filter((_,i)=>!paired.includes(i));
+  const rightItems=sc.pairs.filter((_,i)=>!paired.includes(i));
+  const shuffledRight=shuffle([...rightItems]);
+  container.innerHTML=`<div class="scene active">
+    <div class="sb" style="margin-bottom:6px"><div class="st"><div class="year">🏯 七阁配对</div>${sc.hint}</div></div>
+    <div class="match-grid">
+      <div id="ml">${sc.pairs.map((p,i)=>`<div class="match-item ${paired.includes(i)?'matched':''}" data-side="left" data-i="${i}" onclick="matchClick(${i},'left')">${p.left}</div>`).join('')}</div>
+      <div id="mr">${shuffledRight.map((p,i)=>{
+        const origIdx=sc.pairs.indexOf(p);
+        return `<div class="match-item ${paired.includes(origIdx)?'matched':''}" data-side="right" data-rid="${origIdx}" onclick="matchClick(${origIdx},'right')">${p.right}</div>`;
+      }).join('')}</div>
+    </div>
+    <div id="mc"></div>
+  </div>`;
+}
+
+function matchClick(idx,side){
+  if(matchWrongTimer)return;
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='matching')return;
+  const paired=state.matchDone[state.idx]||[];
+  if(paired.includes(idx))return;
+
+  if(matchSel===null){
+    matchSel={idx,side};
+    document.querySelectorAll('.match-item').forEach(el=>el.classList.remove('sel'));
+    document.querySelectorAll(`.match-item[data-i="${idx}"]`).forEach(el=>el.classList.add('sel'));
+    return;
+  }
+
+  if(matchSel.idx===idx&&matchSel.side!==side){
+    // matched!
+    if(!state.matchDone[state.idx])state.matchDone[state.idx]=[];
+    state.matchDone[state.idx].push(idx);
+    saveState();
+    matchSel=null;
+    document.querySelectorAll('.match-item').forEach(el=>el.classList.remove('sel'));
+    renderMatching(sc,container);
+
+    // Check all done
+    const allDone=sc.pairs.filter((_,i)=>!(state.matchDone[state.idx]||[]).includes(i)).length===0;
+    if(allDone){
+      if(sc.person&&!state.collectedPeople.includes(sc.person)){
+        state.collectedPeople.push(sc.person);
+        showNotif(`📖 解锁人物：${PEOPLE.find(p=>p.id===sc.person).name}`);
+      }
+      document.getElementById('mc').innerHTML=`<div class="ro"><div class="ri">🏯</div><div class="rt">七阁配对完成！</div><div class="rxt">${sc.completeText.replace(/\n/g,'<br>')}</div><button class="btn nx" onclick="advance()">继续 →</button></div>`;
+      saveState();
+    }
+  } else {
+    // wrong
+    document.querySelectorAll('.match-item').forEach(el=>{
+      if(el.dataset.i===idx.toString()||el.dataset.i===matchSel.idx.toString()){
+        el.classList.add('wrong');
+        matchWrongTimer=setTimeout(()=>{
+          document.querySelectorAll('.match-item').forEach(e=>e.classList.remove('wrong','sel'));
+          matchWrongTimer=null;
+        },500);
+      }
+    });
+    matchSel=null;
+  }
+}
+
+// ============================================================
+// 问答
+// ============================================================
+let quizIdx=0;
+function renderQuiz(sc,container){
+  quizIdx=0;
+  const q=sc.questions[0];
+  container.innerHTML=`<div class="scene active">
+    <div class="sb" style="margin-bottom:6px"><div class="st"><div class="year">📝 千秋之问 (1/${sc.questions.length})</div>${q.q}</div></div>
+    <div class="qz-opt" id="qzo">${q.opts.map((o,i)=>`<div class="qz-btn" data-i="${i}" onclick="quizAnswer(${i})">${o}</div>`).join('')}</div>
+    <div id="qr"></div>
+  </div>`;
+}
+
+function quizAnswer(idx){
+  if(answered)return;
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='quiz')return;
+  const q=sc.questions[quizIdx];
+  answered=true;
+  const correct=idx===q.ans;
+  document.querySelectorAll('.qz-btn').forEach((b,i)=>{
+    b.classList.add('d');
+    if(i===q.ans)b.classList.add('cr');
+    if(i===idx&&!correct)b.classList.add('wr');
+  });
+  if(!correct)state.mistakes++;
+  state.quizDone++;
+  const isLast=quizIdx>=sc.questions.length-1;
+  document.getElementById('qr').innerHTML=`<div class="ro"><div class="ri">${correct?'✅':'❌'}</div><div class="rt">${correct?'正确！':q.hint}</div><button class="btn nx" onclick="${isLast?'finishQuiz()':'nextQuiz()'}">${isLast?'查看结局→':'下一题 →'}</button></div>`;
+  saveState();
+}
+
+function nextQuiz(){
+  const sc=SCENES[state.idx];
+  if(!sc||sc.type!=='quiz')return;
+  quizIdx++;
+  answered=false;
+  const q=sc.questions[quizIdx];
+  const container=document.getElementById('sc');
+  container.innerHTML=`<div class="scene active">
+    <div class="sb" style="margin-bottom:6px"><div class="st"><div class="year">📝 千秋之问 (${quizIdx+1}/${sc.questions.length})</div>${q.q}</div></div>
+    <div class="qz-opt" id="qzo">${q.opts.map((o,i)=>`<div class="qz-btn" data-i="${i}" onclick="quizAnswer(${i})">${o}</div>`).join('')}</div>
+    <div id="qr"></div>
+  </div>`;
+}
+
+function finishQuiz(){
+  advance();
+}
+
+// ============================================================
+// 结局
+// ============================================================
+function renderEnding(container){
+  const totalScenes=SCENES.length-1;
+  const mistakes=state.mistakes;
+  const correct=totalScenes-mistakes;
+  const acc=Math.round(correct/totalScenes*100);
+  container.innerHTML=`<div class="scene active end">
+    <div class="ei">🏯</div>
+    <h2>四库·千秋 · 终</h2>
+    <div class="ed">
+      从乾隆盛世到今天，<br>
+      四库全书走过了二百五十年的风雨。<br><br>
+      <span style="color:var(--jin);">一部书，七阁楼，百代守书人。</span><br><br>
+      今天，它依然在兰州。<br>
+      你，成了这段历史的新见证者。
+    </div>
+    <div class="es"><div><div class="ev">${acc}%</div><div class="el">护书准确率</div></div><div><div class="ev">${state.collectedPeople.length}</div><div class="el">解锁人物</div></div><div><div class="ev">4</div><div class="el">章节</div></div></div>
+    <div class="cbar">${PEOPLE.map(p=>`<span class="cp ${state.collectedPeople.includes(p.id)?'got':''}">${p.icon}${state.collectedPeople.includes(p.id)?p.name:'???'}</span>`).join('')}</div>
+    <div class="pcard" style="cursor:default;margin-top:4px"><div class="pi">📦</div><div class="pn">文溯阁《四库全书》</div><div class="pd">今藏甘肃省图书馆·恒温恒湿专库</div></div>
+    <button class="btn rs" onclick="restart()">🔄 重新走一遍</button>
+  </div>`;
+  document.getElementById('cl').textContent='完 成';document.getElementById('ct').textContent='四库·千秋';document.getElementById('ce').textContent='二百五十年文脉传承';document.getElementById('pf').style.width='100%';
+}
+
+// ============================================================
+// 导航
+// ============================================================
+function advance(){
+  if(state.idx<SCENES.length-1){
+    state.idx++;
+    saveState();
+    render();
+    document.getElementById('sa').scrollTop=0;
+  }
+}
+
+function restart(){
+  state={idx:0,mistakes:0,completed:[],collectedPeople:[],sortDone:{},matchDone:{},quizDone:0};
+  saveState();
+  render();
+  document.getElementById('sa').scrollTop=0;
+}
+
+// ============================================================
+// 通知
+// ============================================================
+function showNotif(text){
+  const n=document.getElementById('ntf');
+  n.innerHTML=`<div class="notif"><div class="nn">${text}</div></div>`;
+  setTimeout(()=>n.innerHTML='',2500);
+}
+
+// ============================================================
+// 初始化
+// ============================================================
+loadState();
+initParticles();
+render();
+</script>
+</body>
+</html>
