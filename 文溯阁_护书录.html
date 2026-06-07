@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>文溯阁·护书录 — 四库全书保护史</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --zhu-hong: #8B2500;
+    --zhu-light: #D4A088;
+    --xuan-zhi: #F5F0E8;
+    --mo-hei: #2C1810;
+    --jin: #C9A96E;
+    --jin-light: #E8D8B8;
+    --qing: #4A7C59;
+    --lan: #5B7E9E;
+    --shen: #5C4033;
+    --hui: #999;
+    --shadow: rgba(44,24,16,0.15);
+    --radius: 12px;
+    --font-title: 'Georgia', 'Noto Serif SC', 'KaiTi', serif;
+    --font-body: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  }
+  html, body {
+    height: 100%;
+    background: #1a0f08;
+    font-family: var(--font-body);
+    color: var(--xuan-zhi);
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  #app {
+    max-width: 420px;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1a0f08 0%, #2c1810 40%, #1a0f08 100%);
+  }
+
+  /* ===== Particle Effect ===== */
+  #particles {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    background: rgba(201,169,110,0.15);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== Header ===== */
+  .header {
+    position: relative;
+    z-index: 2;
+    padding: 14px 16px 6px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .header h1 {
+    font-family: var(--font-title);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--jin);
+    letter-spacing: 6px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .header .sub {
+    font-size: 12px;
+    color: var(--zhu-light);
+    letter-spacing: 4px;
+    opacity: 0.6;
+    margin-top: -2px;
+  }
+
+  /* ===== Chapter Header ===== */
+  .chapter-header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 6px 16px 4px;
+    flex-shrink: 0;
+  }
+  .chapter-header .ch-label {
+    font-size: 11px;
+    color: var(--zhu-light);
+    letter-spacing: 3px;
+    opacity: 0.5;
+  }
+  .chapter-header .ch-title {
+    font-family: var(--font-title);
+    font-size: 17px;
+    color: var(--jin);
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+  .chapter-header .ch-era {
+    font-size: 12px;
+    color: var(--hui);
+    margin-top: 2px;
+  }
+
+  /* ===== Progress Bar ===== */
+  .progress-wrap {
+    position: relative;
+    z-index: 2;
+    padding: 6px 16px 12px;
+    flex-shrink: 0;
+  }
+  .progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(201,169,110,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--jin), var(--zhu-hong));
+    border-radius: 2px;
+    transition: width 0.8s ease;
+    width: 0%;
+  }
+  .progress-dots {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+    margin-top: -14px;
+    position: relative;
+  }
+  .progress-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(201,169,110,0.3);
+    background: #1a0f08;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    transition: all 0.5s;
+    position: relative;
+  }
+  .progress-dot.done {
+    background: var(--jin);
+    border-color: var(--jin);
+    box-shadow: 0 0 10px rgba(201,169,110,0.4);
+  }
+  .progress-dot.active {
+    border-color: var(--jin);
+    box-shadow: 0 0 16px rgba(201,169,110,0.3);
+    animation: pulse 2s infinite;
+  }
+  .progress-dot .dot-label {
+    position: absolute;
+    top: 18px;
+    font-size: 8px;
+    color: var(--hui);
+    white-space: nowrap;
+    opacity: 0.6;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(201,169,110,0.2); }
+    50% { box-shadow: 0 0 20px rgba(201,169,110,0.5); }
+  }
+
+  /* ===== Content ===== */
+  .content {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    padding: 0 16px 8px;
+  }
+  .scene {
+    display: none;
+    height: 100%;
+    flex-direction: column;
+    animation: sceneIn 0.6s ease;
+  }
+  .scene.active { display: flex; }
+  @keyframes sceneIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Story Text ===== */
+  .story-box {
+    background: rgba(44,24,16,0.8);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: var(--radius);
+    padding: 20px 18px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(4px);
+  }
+  .story-box .story-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--xuan-zhi);
+    text-align: justify;
+    letter-spacing: 0.5px;
+  }
+  .story-box .story-text .highlight {
+    color: var(--jin);
+    font-weight: 600;
+  }
+  .story-box .story-text .em {
+    color: var(--zhu-light);
+  }
+  .story-box .year-tag {
+    display: inline-block;
+    background: rgba(201,169,110,0.15);
+    color: var(--jin);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--font-title);
+    letter-spacing: 1px;
+    border: 1px solid rgba(201,169,110,0.2);
+    margin-bottom: 8px;
+  }
+
+  /* ===== Choice ===== */
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+  }
+  .choice-btn {
+    padding: 16px 18px;
+    background: rgba(245,240,232,0.04);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 10px;
+    color: var(--xuan-zhi);
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .choice-btn:hover:not(.disabled) {
+    background: rgba(201,169,110,0.08);
+    border-color: rgba(201,169,110,0.4);
+  }
+  .choice-btn:active:not(.disabled) { transform: scale(0.98); }
+  .choice-btn .choice-icon {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+  .choice-btn.disabled { cursor: default; opacity: 0.5; }
+  .choice-btn.correct {
+    background: rgba(74,124,89,0.15);
+    border-color: var(--qing);
+    color: #7FBF8F;
+  }
+  .choice-btn.wrong {
+    background: rgba(194,59,34,0.15);
+    border-color: var(--zhu-hong);
+    color: #D4776A;
+  }
+  .choice-btn .tag {
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 10px;
+    padding: 1px 8px;
+    border-radius: 8px;
+    background: rgba(201,169,110,0.1);
+    color: var(--jin);
+  }
+
+  /* ===== Result Overlay ===== */
+  .result-overlay {
+    background: rgba(44,24,16,0.95);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    position: absolute;
+    top: 0; left: 16px; right: 16px;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    animation: slideDown 0.4s ease;
+  }
+  @keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .result-overlay .r-icon { font-size: 48px; margin-bottom: 8px; }
+  .result-overlay .r-title { font-size: 20px; font-weight: 700; color: var(--jin); margin-bottom: 6px; }
+  .result-overlay .r-text { font-size: 14px; color: var(--zhu-light); line-height: 1.6; margin-bottom: 16px; }
+  .result-overlay .r-fact {
+    background: rgba(201,169,110,0.06);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--jin);
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: left;
+    color: var(--jin-light);
+  }
+  .result-overlay .r-fact .fact-label {
+    font-size: 11px;
+    color: var(--jin);
+    opacity: 0.6;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .result-overlay .btn {
+    width: 100%;
+    padding: 14px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .result-overlay .btn:active { transform: scale(0.97); }
+  .result-overlay .btn.next {
+    background: var(--jin);
+    color: #1a0f08;
+  }
+  .result-overlay .btn.retry {
+    background: rgba(201,169,110,0.1);
+    color: var(--jin);
+    border: 1px solid rgba(201,169,110,0.3);
+    margin-top: 8px;
+  }
+
+  /* ===== Final Scene ===== */
+  .final-scene {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .final-scene .final-icon { font-size: 72px; margin-bottom: 12px; }
+  .final-scene h2 { font-family: var(--font-title); font-size: 24px; color: var(--jin); letter-spacing: 4px; }
+  .final-scene .final-desc {
+    font-size: 14px;
+    color: var(--zhu-light);
+    line-height: 1.8;
+    margin: 12px 0;
+  }
+  .final-scene .final-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .final-scene .final-stat .fs-val {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--jin);
+  }
+  .final-scene .final-stat .fs-label {
+    font-size: 12px;
+    color: var(--hui);
+  }
+  .final-scene .btn {
+    padding: 14px 40px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+  .final-scene .btn.restart {
+    background: var(--jin);
+    color: #1a0f08;
+  }
+
+  /* ===== Book Card ===== */
+  .book-card {
+    background: rgba(44,24,16,0.7);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .book-card .bc-icon { font-size: 28px; }
+  .book-card .bc-info { flex: 1; }
+  .book-card .bc-title { font-size: 14px; font-weight: 600; color: var(--jin); }
+  .book-card .bc-desc { font-size: 12px; color: var(--zhu-light); opacity: 0.7; margin-top: 2px; }
+  .book-card .bc-badge { font-size: 11px; padding: 2px 8px; border-radius: 8px; background: rgba(74,124,89,0.15); color: #7FBF8F; }
+
+  /* ===== Typing Effect ===== */
+  .typing-cursor::after {
+    content: '▍';
+    animation: blink 1s step-end infinite;
+    color: var(--jin);
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ===== Scroll Area ===== */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 4px;
+  }
+  .scroll-area::-webkit-scrollbar { width: 2px; }
+  .scroll-area::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.2); border-radius: 2px; }
+
+  /* ===== Mini Quiz ===== */
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .quiz-options .q-btn {
+    padding: 16px 8px;
+    background: rgba(245,240,232,0.04);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 10px;
+    color: var(--xuan-zhi);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .quiz-options .q-btn:active:not(.disabled) { transform: scale(0.97); }
+  .quiz-options .q-btn.disabled { cursor: default; opacity: 0.4; }
+  .quiz-options .q-btn.correct {
+    background: rgba(74,124,89,0.2);
+    border-color: var(--qing);
+    color: #7FBF8F;
+  }
+  .quiz-options .q-btn.wrong {
+    background: rgba(194,59,34,0.15);
+    border-color: var(--zhu-hong);
+    color: #D4776A;
+  }
+  .quiz-hint {
+    font-size: 13px;
+    color: var(--zhu-light);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 380px) {
+    .header h1 { font-size: 18px; letter-spacing: 4px; }
+    .story-box .story-text { font-size: 14px; }
+    .choice-btn { padding: 14px 14px; font-size: 13px; }
+  }
+  @media (min-height: 800px) {
+    .story-box { padding: 24px 20px; }
+  }
+
+  /* ===== Scroll indicator ===== */
+  .scroll-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--hui);
+    opacity: 0.4;
+    padding: 4px 0;
+    animation: bob 2s ease infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  /* ===== Collectible ===== */
+  .collect-notification {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(44,24,16,0.95);
+    border: 1px solid var(--jin);
+    border-radius: 12px;
+    padding: 14px 24px;
+    z-index: 50;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    animation: notifIn 0.5s ease, notifOut 0.5s ease 2.5s forwards;
+    pointer-events: none;
+  }
+  @keyframes notifIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes notifOut {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  }
+  .collect-notification .cn-icon { font-size: 36px; }
+  .collect-notification .cn-title { font-size: 16px; font-weight: 600; color: var(--jin); margin-top: 4px; }
+  .collect-notification .cn-desc { font-size: 12px; color: var(--zhu-light); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Particles -->
+  <div id="particles"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>文溯阁·护书录</h1>
+    <div class="sub">—— 四库全书二百年流转</div>
+  </div>
+
+  <!-- Chapter Header -->
+  <div class="chapter-header">
+    <div class="ch-label" id="ch-label">第 壹 章</div>
+    <div class="ch-title" id="ch-title">肇始</div>
+    <div class="ch-era" id="ch-era">清·乾隆四十六年（1781）</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-dots" id="progress-dots"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content">
+    <div class="scroll-area" id="scroll-area">
+      <div id="scene-container"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="notification-container"></div>
+
+<script>
+// ============================================================
+// CHAPTER DATA — 文溯阁护书史 五章
+// ============================================================
+const CHAPTERS = [
+  {
+    id: 1, title: '肇始', era: '清·乾隆四十六年（1781）', label: '第 壹 章',
+    story: [
+      '乾隆皇帝下诏编纂《四库全书》，历时十三年完成。\n全书共誊抄<span class="highlight">七部</span>，分藏南北七阁。\n\n其中一部藏于<span class="highlight">盛京（沈阳）文溯阁</span>，\n取"溯涧求本"之意——<span class="em">溯</span>者，追溯源流也。\n\n文溯阁本共收录书籍<span class="highlight">3,593种</span>，\n计<span class="highlight">79,030卷</span>，\n是七阁中保存最完整的一部。',
+      '然而，盛世修书的背后，\n暗藏着王朝盛极而衰的伏笔。\n这部书的命运，\n将与国家的命运紧密交织……'
+    ],
+    type: 'story',
+    next: '这些书该如何妥善保存？你要做出第一个选择。'
+  },
+  {
+    id: 2, title: '肇始·抉择', era: '清·乾隆四十六年（1781）', label: '第 壹 章',
+    type: 'choice',
+    question: '文溯阁建成，四库入藏。作为护书人，你应该如何保证这些书能传之久远？',
+    choices: [
+      { text: '深藏密锁，不轻易示人', icon: '🔒', correct: false,
+        result: '乾隆皇帝认为，书藏起来不让人看，就失去了编纂的意义。他下令"许士子入阁抄阅"。',
+        fact: '文溯阁建成后，乾隆特谕"许士子入阁抄阅"，是中国最早的公共图书馆理念之一。' },
+      { text: '严格防火防潮，但不禁止士子抄阅', icon: '📜', correct: true,
+        result: '明智之选！文溯阁采用"水磨砖"砌墙防火，檐下悬"碧螺"铜铃通风防潮，同时开放士子抄阅。',
+        fact: '文溯阁建筑借鉴宁波天一阁"天一生水"布局，六间二层——"六"取《易经》"天一生水，地六成之"之意，以水克火。' },
+      { text: '设专职管理人员日夜看守', icon: '🛡️', correct: false,
+        result: '仅有人手不够。文溯阁的设计本身就有防火考虑——但防潮才是最难的。',
+        fact: '四库全书用开化榜纸抄写，开化纸防蛀但不防潮。文溯阁在沈阳的干燥气候反而成了优势。' }
+    ]
+  },
+  {
+    id: 3, title: '危局', era: '清·光绪二十六年（1900）', label: '第 贰 章',
+    story: [
+      '一百多年过去了。\n\n清朝由盛转衰，内忧外患。\n光绪二十六年（1900年），\n八国联军攻入北京，\n圆明园、翰林院的藏书付之一炬。\n\n消息传到沈阳，\n文溯阁的守书人坐立不安——\n<span class="highlight">北方的战火</span>，会不会烧到盛京？',
+      '更严峻的是：\n宣统元年（1909年），\n东三省总督<span class="highlight">锡良</span>上奏朝廷：\n"文溯阁藏书阁座渗漏，书籍受潮。"\n\n风雨飘摇中，这部书该何去何从？'
+    ],
+    type: 'story',
+    next: '战火逼近，你要决定如何保护这部书。'
+  },
+  {
+    id: 4, title: '危局·抉择', era: '民国三年（1914）', label: '第 贰 章',
+    type: 'choice',
+    question: '1914年，奉天（沈阳）局势紧张。文溯阁本四库全书面临威胁，你决定：',
+    choices: [
+      { text: '原地死守，人在书在', icon: '⚔️', correct: false,
+        result: '忠诚可嘉，但现实残酷。1914年，奉天局势恶化，守书人发现仅凭一己之力无法保护这部巨著。',
+        fact: '文溯阁本于1914年被秘密运至北京，存放于故宫保和殿。这是四库全书的第一次大迁徙。' },
+      { text: '秘密南迁至北京保存', icon: '🚚', correct: true,
+        result: '1914年，文溯阁本装箱秘密运至北京，存放于故宫保和殿。1925年才返回沈阳。',
+        fact: '这次搬迁是有史以来四库全书最大规模的搬运——共装6,144函，动用了整整一列火车！' },
+      { text: '藏在沈阳民间百姓家中', icon: '🏠', correct: false,
+        result: '散落民间反而更容易丢失。好在护书人选择了更稳妥的方式——南迁。',
+        fact: '当时沈阳已出现日军势力，藏在民间恐怕不保。事实证明，南迁是唯一正确的选择。' }
+    ]
+  },
+  {
+    id: 5, title: '流徙', era: '民国二十年（1931）', label: '第 叁 章',
+    story: [
+      '1931年，<span class="highlight">九一八事变</span>爆发。\n\n东北全境沦陷。\n文溯阁本虽已从北京运回沈阳，\n却又落入日军之手。\n\n日军将四库全书视为"战利品"，\n企图运往日本。\n\n一场更惊心动魄的护书行动……\n即将展开。'
+    ],
+    type: 'story',
+    next: '日军觊觎四库全书，你要如何应对？'
+  },
+  {
+    id: 6, title: '流徙·抉择', era: '民国二十一年（1932）', label: '第 叁 章',
+    type: 'choice',
+    question: '日军要求"检查"文溯阁本藏书，实则企图将书运往日本。你该怎么办？',
+    choices: [
+      { text: '以古籍需要整理为由，拖延时间', icon: '⏳', correct: true,
+        result: '机智！护书人以"古籍需要逐册登记造册"为由，一拖就是三年。期间秘密转移了部分珍本。',
+        fact: '文溯阁本在日占时期（1931-1945）曾多次被要求运往东京，均被中方管理人员以各种理由拖延，保护了国宝。' },
+      { text: '公开抗议，拒绝日军检查', icon: '✊', correct: false,
+        result: '勇气可嘉，但在日占区，直接对抗只会招致更严厉的镇压。保护者选择了更智慧的方式。',
+        fact: '当时东北已沦陷，直接抗议无异于以卵击石。护书人选择了"拖延战术"保全古籍。' },
+      { text: '将书分散藏在沈阳各处', icon: '📦', correct: false,
+        result: '分散有风险——一旦散失，就再也凑不齐了。好在护书人没有这么做。',
+        fact: '文溯阁本最珍贵之处在于"完整"——七阁本中，文渊阁本在1860年毁于大火，文源阁本毁于英法联军，文溯阁本是为数不多保存完整的。' }
+    ]
+  },
+  {
+    id: 7, title: '新生', era: '1950年代', label: '第 肆 章',
+    story: [
+      '1945年，抗战胜利。\n\n文溯阁本劫后余生，\n但沈阳的气候对古籍保存并不理想。\n\n新中国建立后，\n专家们开始为这部书寻找一个\n<span class="highlight">更安全的家</span>。\n\n经过反复考察，\n目光投向了——<span class="highlight">甘肃兰州</span>。'
+    ],
+    type: 'story',
+    next: '为什么是甘肃？你要做出迁徙决策。'
+  },
+  {
+    id: 8, title: '新生·抉择', era: '1965年', label: '第 肆 章',
+    type: 'choice',
+    question: '中央政府决定为文溯阁本寻找永久保存地。专家提出三个方案，你赞同哪一个？',
+    choices: [
+      { text: '北京——国家图书馆收藏，条件最好', icon: '🏛️', correct: false,
+        result: '北京条件虽好，但气候干燥方面不如西北。且北京已有文津阁本，不宜让两部四库全书放在同一处。',
+        fact: '乾隆建七阁时就有意分散收藏——"散不宜聚"，避免一毁俱毁。' },
+      { text: '甘肃兰州——气候干燥，地利人和', icon: '🏜️', correct: true,
+        result: '明智！甘肃气候干燥，年均湿度仅40%-50%，最适合古籍保存。1965年，文溯阁本正式迁往兰州，由甘肃省图书馆收藏。',
+        fact: '1965年，文溯阁本从沈阳运抵兰州。甘肃省图书馆为此专门修建了"文溯阁四库全书专库"，恒温恒湿至今。' },
+      { text: '沈阳原地不动——回到文溯阁原址', icon: '🏯', correct: false,
+        result: '沈阳原址经过战乱已不复当年，且沈阳冬季湿冷，对古籍有害。',
+        fact: '沈阳文溯阁建筑本身已不是原貌，且沈阳冬季供暖产生的温湿度波动对古籍损伤很大。' }
+    ]
+  },
+  {
+    id: 9, title: '传承', era: '现在与未来', label: '第 伍 章',
+    story: [
+      '今天，文溯阁本四库全书\n静静地躺在甘肃省图书馆的专库里。\n\n在恒温恒湿的玻璃柜中，\n那泛黄的纸张，\n墨迹依然清晰如昨。\n\n但新的挑战出现了——\n<span class="highlight">如何让更多人看到它？</span>\n\n数字化，是答案。',
+      '2005年以来，\n文溯阁四库全书开始数字化扫描。\n每一页都要小心翼翼地翻拍，\n不能有丝毫损伤。\n\n二十年后，\n它有了数字孪生——\n你手中的这个游戏，\n就是这份传承的一部分。'
+    ],
+    type: 'story',
+    next: '最后一道题——关于文溯阁本，你知道多少？'
+  },
+  {
+    id: 10, title: '传承·终考', era: '薪火相传', label: '第 伍 章',
+    type: 'quiz',
+    question: '文溯阁《四库全书》现存哪里？',
+    options: ['沈阳故宫', '北京国家图书馆', '甘肃省图书馆', '台北故宫博物院'],
+    answer: 2,
+    correctText: '✅ 正确！文溯阁本现存甘肃省图书馆（兰州），是七阁中保存最完整的之一。',
+    wrongText: '❌ 正确答案是甘肃省图书馆。1965年从沈阳迁至兰州，至今已守护60年。',
+    fact: '七阁四库全书中，文宗阁、文汇阁毁于太平天国战火；文源阁毁于英法联军；文渊阁本在台北故宫；文津阁本在北京国家图书馆；文澜阁本在浙江图书馆（有缺损）；文溯阁本在甘肃省图书馆——是保存最完整的一部。'
+  },
+  {
+    id: 11, title: '传承·终考二', era: '薪火相传', label: '终 章',
+    type: 'quiz',
+    question: '文溯阁四库全书共有多少册？',
+    options: ['约3.6万册', '约7.9万册', '约1.2万册', '约5.4万册'],
+    answer: 1,
+    correctText: '✅ 正确！共约79,030卷，36,000余册，3,593种。',
+    wrongText: '❌ 共约79,030卷。数字本身不重要，重要的是——每一卷都是人工手抄的。',
+    fact: '四库全书全部手抄完成，参与抄写者达3,800余人。一部全书全部抄完需要一个人抄13年。'
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  chapter: 0,         // current chapter index
+  completed: 0,       // chapters completed (for progress)
+  mistakes: [],       // wrong answers
+  maxChapter: 0,      // furthest chapter reached
+  showResult: false   // showing result overlay
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('wensuge_game');
+    if (raw) Object.assign(state, JSON.parse(raw));
+  } catch(e) {}
+}
+
+function saveState() {
+  localStorage.setItem('wensuge_game', JSON.stringify(state));
+}
+
+// ============================================================
+// INIT PARTICLES
+// ============================================================
+function initParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 2 + Math.random() * 4;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (15 + Math.random() * 20) + 's';
+    p.style.animationDelay = Math.random() * 15 + 's';
+    container.appendChild(p);
+  }
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+let answered = false;
+
+function render() {
+  const container = document.getElementById('scene-container');
+  const ch = CHAPTERS[state.chapter];
+  if (!ch) { finishGame(); return; }
+
+  answered = false;
+  state.showResult = false;
+
+  // Update header
+  document.getElementById('ch-label').textContent = ch.label;
+  document.getElementById('ch-title').textContent = ch.title;
+  document.getElementById('ch-era').textContent = ch.era;
+
+  // Update progress
+  renderProgress();
+
+  switch(ch.type) {
+    case 'story': renderStory(ch, container); break;
+    case 'choice': renderChoice(ch, container); break;
+    case 'quiz': renderQuiz(ch, container); break;
+  }
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function renderProgress() {
+  const total = CHAPTERS.length;
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = `${(state.chapter / total) * 100}%`;
+
+  const dots = document.getElementById('progress-dots');
+  const labels = ['肇始', '危局', '流徙', '新生', '传承'];
+  dots.innerHTML = labels.map((l, i) => {
+    const chIdx = [0, 3, 5, 7, 9]; // chapter indices for each milestone
+    const isDone = state.chapter > chIdx[i];
+    const isActive = state.chapter === chIdx[i];
+    return `<div class="progress-dot ${isDone ? 'done' : ''} ${isActive ? 'active' : ''}" style="margin-top:8px">
+      ${isDone ? '✓' : ''}<span class="dot-label">${l}</span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// STORY SCENE
+// ============================================================
+function renderStory(ch, container) {
+  container.innerHTML = `
+    <div class="scene active" id="scene">
+      <div class="story-box">
+        <div class="story-text" id="story-text"></div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="scroll-hint" id="scroll-hint" style="display:none">↓ 继续</div>
+      <div class="choices" id="story-next" style="display:none">
+        <button class="choice-btn" onclick="nextChapter()">
+          <span class="choice-icon">→</span> ${ch.next || '继续'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Type effect
+  const textEl = document.getElementById('story-text');
+  const fullText = ch.story.join('\n\n');
+  typeText(textEl, fullText, () => {
+    document.getElementById('scroll-hint').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('scroll-hint').style.display = 'none';
+      document.getElementById('story-next').style.display = 'block';
+    }, 600);
+  });
+}
+
+let typingTimer = null;
+function typeText(el, text, onDone) {
+  if (typingTimer) clearInterval(typingTimer);
+  el.innerHTML = '';
+  let idx = 0;
+  function addChar() {
+    if (idx < text.length) {
+      el.innerHTML = text.substring(0, idx + 1).replace(/\n/g, '<br>');
+      idx++;
+      typingTimer = setTimeout(addChar, 25);
+    } else {
+      el.innerHTML = text.replace(/\n/g, '<br>');
+      if (onDone) onDone();
+    }
+  }
+  addChar();
+}
+
+// ============================================================
+// CHOICE SCENE
+// ============================================================
+function renderChoice(ch, container) {
+  container.innerHTML = `
+    <div class="scene active" id="scene">
+      <div class="story-box">
+        <div class="story-text">
+          <div class="year-tag">⚡ 护书抉择</div>
+          ${ch.question}
+        </div>
+      </div>
+      <div class="choices" id="choice-list">
+        ${ch.choices.map((c, i) => `
+          <button class="choice-btn" data-idx="${i}" onclick="makeChoice(${i}, ${ch.id})">
+            <span class="choice-icon">${c.icon}</span>
+            ${c.text}
+          </button>
+        `).join('')}
+      </div>
+      <div id="result-overlay-container"></div>
+    </div>
+  `;
+}
+
+function makeChoice(idx, chapterId) {
+  if (answered) return;
+  const ch = CHAPTERS.find(c => c.id === chapterId);
+  if (!ch) return;
+
+  const choice = ch.choices[idx];
+  answered = true;
+
+  // Highlight buttons
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    if (ch.choices[i].correct) btn.classList.add('correct');
+    if (i === idx && !choice.correct) btn.classList.add('wrong');
+  });
+
+  if (!choice.correct) {
+    state.mistakes.push({ chapter: ch.title, chosen: choice.text });
+  }
+
+  // Show result overlay
+  const container = document.getElementById('result-overlay-container');
+  container.innerHTML = `
+    <div class="result-overlay">
+      <div class="r-icon">${choice.correct ? '📜' : '📖'}</div>
+      <div class="r-title">${choice.correct ? '✓ 护书成功' : '✗ 此路不通'}</div>
+      <div class="r-text">${choice.result}</div>
+      <div class="r-fact">
+        <span class="fact-label">📌 历史小记</span>
+        ${choice.fact}
+      </div>
+      <button class="btn next" onclick="afterChoice()">${choice.correct ? '继续前行 →' : '回到正史 ↺'}</button>
+    </div>
+  `;
+
+  saveState();
+}
+
+function afterChoice() {
+  nextChapter();
+}
+
+// ============================================================
+// QUIZ SCENE
+// ============================================================
+function renderQuiz(ch, container) {
+  container.innerHTML = `
+    <div class="scene active" id="scene">
+      <div class="story-box">
+        <div class="story-text">
+          <div class="year-tag">📝 终考</div>
+          ${ch.question}
+        </div>
+      </div>
+      <div class="quiz-options" id="quiz-options">
+        ${ch.options.map((opt, i) => `
+          <button class="q-btn" data-idx="${i}" onclick="quizAnswer(${i}, ${ch.id})">${opt}</button>
+        `).join('')}
+      </div>
+      <div id="quiz-result-container"></div>
+    </div>
+  `;
+}
+
+function quizAnswer(idx, chapterId) {
+  if (answered) return;
+  const ch = CHAPTERS.find(c => c.id === chapterId);
+  if (!ch) return;
+
+  answered = true;
+  const correct = idx === ch.answer;
+
+  // Highlight
+  const btns = document.querySelectorAll('.q-btn');
+  btns.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    if (i === ch.answer) btn.classList.add('correct');
+    if (i === idx && !correct) btn.classList.add('wrong');
+  });
+
+  if (!correct) state.mistakes.push({ chapter: ch.title, chosen: ch.options[idx] });
+
+  const container = document.getElementById('quiz-result-container');
+  container.innerHTML = `
+    <div class="result-overlay" style="position:relative;top:0;left:0;right:0;margin-top:14px;">
+      <div class="r-text">${correct ? ch.correctText : ch.wrongText}</div>
+      <div class="r-fact">
+        <span class="fact-label">📌 历史小记</span>
+        ${ch.fact}
+      </div>
+      <button class="btn next" onclick="nextChapter()">继续 →</button>
+    </div>
+  `;
+
+  saveState();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function nextChapter() {
+  if (state.chapter < CHAPTERS.length - 1) {
+    state.chapter++;
+    state.completed++;
+    if (state.chapter > state.maxChapter) state.maxChapter = state.chapter;
+    saveState();
+    render();
+    document.getElementById('scroll-area').scrollTop = 0;
+  } else {
+    finishGame();
+  }
+}
+
+// ============================================================
+// FINISH
+// ============================================================
+function finishGame() {
+  const container = document.getElementById('scene-container');
+  const totalChapters = CHAPTERS.length;
+  const mistakes = state.mistakes.length;
+  const correct = totalChapters - mistakes;
+  const accuracy = Math.round(correct / totalChapters * 100);
+
+  container.innerHTML = `
+    <div class="scene active final-scene">
+      <div class="final-icon">🏯</div>
+      <h2>护书录·终</h2>
+      <div class="final-desc">
+        从乾隆盛世到今天，<br>
+        文溯阁四库全书走过了二百四十余年的风雨。<br><br>
+        它经历了战火、迁徙、占领、新生……<br>
+        <span style="color:var(--jin);">最终安然存放在兰州，</span><br>
+        成为中华文脉最完整的见证。
+      </div>
+      <div class="final-stats">
+        <div class="final-stat"><div class="fs-val">${accuracy}%</div><div class="fs-label">护书准确率</div></div>
+        <div class="final-stat"><div class="fs-val">${state.mistakes.length}</div><div class="fs-label">失误次数</div></div>
+        <div class="final-stat"><div class="fs-val">5</div><div class="fs-label">章节</div></div>
+      </div>
+      <button class="btn restart" onclick="restartGame()">🔄 重新护书</button>
+      <br><br>
+      <div class="book-card" style="cursor:default;">
+        <div class="bc-icon">📦</div>
+        <div class="bc-info">
+          <div class="bc-title">文溯阁《四库全书》</div>
+          <div class="bc-desc">今藏甘肃省图书馆 · 恒温恒湿专库</div>
+        </div>
+        <div class="bc-badge">保存中</div>
+      </div>
+    </div>
+  `;
+
+  // Update header
+  document.getElementById('ch-label').textContent = '完 成';
+  document.getElementById('ch-title').textContent = '护书录';
+  document.getElementById('ch-era').textContent = '二百四十年文脉传承';
+  document.getElementById('progress-fill').style.width = '100%';
+}
+
+function restartGame() {
+  state.chapter = 0;
+  state.completed = 0;
+  state.mistakes = [];
+  state.maxChapter = 0;
+  state.showResult = false;
+  saveState();
+  render();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+initParticles();
+render();
+</script>
+</body>
+</html>
